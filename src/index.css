@@ -1,0 +1,124 @@
+/* src/index.css */
+/* Globális CSS változók a színekhez - könnyebb módosítani később */
+:root {
+  --primary-color: #6200EE; /* Fő akcentus szín (sötét lila) */
+  --primary-light: #BB86FC; /* Világosabb lila (pl. gombok hover állapota) */
+  --secondary-color: #03DAC6; /* Másodlagos akcentus szín (türkiz) */
+  --background-color: #F8F8F8; /* Világos szürke háttér az app KÖRÉ */
+  --app-background-color: #FFFFFF; /* Tiszta fehér az app belsejében */
+  --text-color: #333333; /* Sötétszürke szöveg */
+  --text-light-color: #666666; /* Világosabb szürke szöveg */
+  --border-color: #EEEEEE; /* Világos szürke keret/elválasztó */
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1); /* Enyhe árnyék */
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15); /* Közepes árnyék */
+
+  /* Betűtípusok - a referencia kép alapján valószínűleg egy Google Font (pl. Roboto vagy Poppins) */
+  /* Most az Inter-t használjuk, de később könnyen cserélhető */
+  font-family: 'Roboto', sans-serif; 
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: var(--text-color); /* Alapértelmezett szövegszín */
+  background-color: var(--background-color); /* Alapértelmezett háttér */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%; /* Mobil böngészőknél a szövegméret fixálása */
+}
+
+/* Reset alapstílusok */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center; /* Horizontálisan középre igazítás */
+  align-items: center; /* Vertikálisan középre igazítás */
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  overflow: hidden; /* Ne legyen scroll a body-n, csak az app-on belül */
+}
+
+/* Általános link stílusok */
+a {
+  font-weight: 500;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--primary-light);
+}
+
+/* Általános gomb stílusok (ha van ilyen) */
+button {
+  border-radius: 8px;
+  border: none; /* A referenciaképen nincsenek keretek a gombokon */
+  padding: 0.8em 1.5em; /* Kicsit nagyobb padding */
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.25s, box-shadow 0.25s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Enyhe árnyék */
+}
+button:hover {
+  background-color: var(--primary-light);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+  outline-color: var(--primary-light);
+}
+
+/* Fejléc stílusok */
+h1 {
+  font-size: 2em; /* Kisebb H1 az appon belül */
+  line-height: 1.2;
+  color: var(--text-color);
+}
+h2 {
+  font-size: 1.5em;
+  color: var(--text-color);
+}
+p {
+  color: var(--text-light-color);
+  margin-bottom: 0.5em;
+}
+
+/* Media query a világos/sötét módhoz (opcionális, de jó gyakorlat) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #1A1A1A;
+    --app-background-color: #242424;
+    --text-color: #E0E0E0;
+    --text-light-color: #AAAAAA;
+    --border-color: #444444;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  button {
+    background-color: var(--primary-light);
+    color: white;
+  }
+  a {
+    color: var(--primary-light);
+  }
+}

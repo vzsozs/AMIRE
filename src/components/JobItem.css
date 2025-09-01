@@ -1,0 +1,76 @@
+/* src/components/JobItem.css */
+.job-item {
+  display: flex;
+  align-items: center;
+  background-color: var(--app-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-bottom: 15px;
+  padding-left: 0; /* A színes sáv miatt a belső padding-et a content kapja */
+  box-shadow: var(--shadow-light);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  overflow: hidden; /* A border-radius miatt */
+}
+
+.job-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-medium);
+}
+
+.job-item-status-bar {
+  width: 8px; /* A bal oldali színes sáv */
+  height: 80px; /* Egyezzen a kártya magasságával */
+}
+
+.job-item-content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+}
+
+.job-item-title {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: var(--text-color);
+  margin: 0 0 5px 0;
+}
+
+.job-item-deadline {
+  font-size: 0.9em;
+  color: var(--text-light-color);
+  margin: 0;
+}
+
+.job-item-status {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--text-light-color);
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.job-item-arrow {
+  font-size: 1em;
+  color: var(--text-light-color);
+  margin-right: 15px;
+  transition: color 0.2s;
+}
+
+.job-item:hover .job-item-arrow {
+  color: var(--primary-color);
+}
+
+.job-item-link {
+  text-decoration: none; /* Nincs aláhúzás */
+  color: inherit; /* Örökölje a szövegszínt */
+}

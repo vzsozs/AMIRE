@@ -1,0 +1,63 @@
+/* src/components/Modal.css */
+.modal-overlay {
+  position: fixed; /* A teljes képernyőt lefedi */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Sötétített háttér */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Legyen minden más felett */
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background-color: var(--app-background-color);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-medium);
+  width: 90%; /* A szélesség 90%-a, de maximum... */
+  max-width: 400px; /* ...400px */
+  position: relative; /* A bezárás gomb pozicionálásához */
+  animation: slideIn 0.3s ease-out;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2em; /* Nagyobb 'x' jel */
+  color: var(--text-light-color);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-close-button:hover {
+  color: var(--text-color);
+}
+
+/* Animációk */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

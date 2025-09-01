@@ -1,0 +1,36 @@
+/* src/components/ColorPalette.css */
+.color-palette {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0;
+  background-color: transparent;
+}
+
+.color-swatch {
+  box-sizing: border-box;
+  min-width: 0;
+  
+  /* A LEGFONTOSABB SOR: Felülírja a globális gomb paddingot */
+  padding: 0;
+
+  flex-basis: calc(16.666% - 10px);
+  
+  aspect-ratio: 1 / 1;
+  height: auto;
+
+  border-radius: 5px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.color-swatch.selected {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 5px var(--primary-light);
+}

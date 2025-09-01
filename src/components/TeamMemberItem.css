@@ -1,0 +1,54 @@
+/* src/components/PersonnelItem.css */
+.team-member-item-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.team-member-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background-color: var(--app-background-color);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 15px;
+  box-shadow: var(--shadow-light);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.team-member-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-medium);
+}
+
+.team-member-avatar {
+  font-size: 2.5em; /* Nagyobb avatar ikon */
+  color: var(--text-light-color);
+  margin-right: 15px;
+}
+
+.team-member-info {
+  flex-grow: 1; /* Kitölti a rendelkezésre álló helyet */
+}
+
+.team-member-name {
+  font-size: 1.1em;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+}
+
+.team-member-role {
+  font-size: 0.9em;
+  color: var(--text-light-color);
+  margin: 0;
+}
+
+.team-member-arrow {
+  font-size: 1em;
+  color: var(--text-light-color);
+  transition: color 0.2s;
+}
+
+.team-member-item:hover .team-member-arrow {
+  color: var(--primary-color);
+}

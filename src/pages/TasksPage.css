@@ -1,0 +1,43 @@
+/* src/pages/TasksPage.css */
+.tasks-page-container {
+  padding: 0; /* A belső padding-et az app-content kezeli, így 0-ra állítjuk */
+  position: relative; /* A lebegő gomb pozicionálásához kell */
+  height: 100%;
+}
+
+.tasks-page-header {
+  padding: 0 20px 20px 20px; /* Lefelé nagyobb padding, hogy elválassza a listától */
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.job-list {
+  padding: 0 20px; /* Oldalsó padding a listának */
+}
+
+/* Floating Action Button (FAB) - Lebegő gomb */
+.fab {
+  position: absolute; /* Az app-content-hez képest pozicionáljuk */
+  right: 20px;
+  bottom: 20px;
+  width: 56px;
+  height: 56px;
+  padding: 0; /* EZ AZ ÚJ SOR, AMI MEGOLDJA A PROBLÉMÁT */
+  border-radius: 50%; /* Kör alakú gomb */
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 1.5em; /* Nagyobb ikon */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-medium);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  z-index: 100; /* Legyen minden felett */
+}
+
+.fab:hover {
+  background-color: var(--primary-light);
+  transform: scale(1.05); /* Enyhe nagyítás hover-re */
+}

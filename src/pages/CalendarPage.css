@@ -1,0 +1,187 @@
+/* src/pages/CalendarPage.css */
+
+.calendar-page-container {
+  padding: 20px;
+}
+
+.calendar-page-header {
+  margin-bottom: 20px;
+}
+
+.calendar-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  background-color: #3C3C3C; /* Sötétszürke háttér a naptárnak */
+}
+
+/* react-calendar felülírása */
+.react-calendar {
+  width: 100%;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+  background-color: transparent; /* A wrapper kapja a színt */
+  padding: 15px;
+}
+
+/* Navigáció (felső sáv) */
+.react-calendar__navigation {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+  /* Fontos, hogy a magassága megmaradjon, még ha a gombok el is tűnnek */
+  height: 44px; 
+}
+
+/* Eltüntetjük a gyári gombokat */
+.react-calendar__navigation__arrow {
+  display: none !important;
+}
+
+/* A gyári label-t középre igazítjuk, hogy helyet csináljon a miénknek */
+.react-calendar__navigation__label {
+  flex-grow: 1 !important;
+  pointer-events: none; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* EZ A HIÁNYZÓ RÉSZ, AMI A KÉTSOROS FELIRATOT FORMÁZZA */
+.custom-navigation-label {
+  text-align: center;
+  font-weight: bold;
+}
+.custom-navigation-label .year {
+  font-size: 0.9em;
+  color: #AAAAAA; /* Halványabb szürke az évszámnak */
+}
+.custom-navigation-label .month {
+  font-size: 1.2em;
+  color: var(--primary-light); /* Lila a hónapnak */
+  text-transform: capitalize; /* Nagy kezdőbetű */
+}
+
+
+/* Az új, saját navigációs sáv stílusa alul */
+.custom-calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #444;
+}
+
+.custom-nav-button {
+  background: none;
+  border: none;
+  color: #E0E0E0;
+  font-size: 1.2em;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.custom-nav-button:hover {
+  background-color: #555;
+}
+
+
+/* Hét napjai (H, K, SZE...) */
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #AAAAAA;
+  font-size: 0.8em;
+}
+.react-calendar__month-view__weekdays__weekday {
+  padding: 0.5em;
+}
+
+/* Napok (cellák) */
+.react-calendar__tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 50px;
+  padding-top: 5px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: #E0E0E0;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #555;
+}
+
+/* Mai nap */
+.react-calendar__tile--now {
+  background: none;
+  box-shadow: inset 0 0 0 1px #888;
+}
+.react-calendar__tile--now:enabled:hover {
+  background-color: #555;
+}
+
+/* Kiválasztott nap */
+.react-calendar__tile--active {
+  background: var(--primary-color) !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* Hétvégék pirossal */
+.react-calendar__month-view__days__day--weekend {
+  color: #ff8a80;
+}
+
+.deadline-strip {
+  /* Itt már nem kell pozícionálni, mert a flexbox konténer elrendezi */
+  width: 70%;
+  height: 4px;
+  background-color: #ea4335;
+  border-radius: 2px;
+}
+
+
+/* Kiválasztott nap alatti szekció */
+.selected-day-jobs {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+/* Konténer a napi jelölőknek */
+.day-markers {
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column; /* A pöttyök és a csík egymás alatt lesznek */
+  align-items: center; /* Vízszintesen középre */
+  gap: 4px; /* Térköz a pöttyök sora és a csík között */
+}
+
+/* Konténer a színes pöttyöknek */
+.availability-dots {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+
+.availability-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  /* A színét inline style-ként kapja meg */
+}
