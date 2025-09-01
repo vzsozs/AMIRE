@@ -1,26 +1,34 @@
 // src/pages/JobDetailPage.jsx
-import React, { useState, useContext } from 'react'; // useContext importálása
-import { TeamContext } from '../context/TeamContext'; // 'useTeam' helyett 'TeamContext'
+import React, { useState, useContext } from 'react';
+import { TeamContext } from '../context/TeamContext'; // FONTOS: TeamContext importálása
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaTrash, FaUserPlus, FaTimesCircle, FaPencilAlt } from 'react-icons/fa';
+import { toYYYYMMDD } from '../utils/date';
+import { FaArrowLeft, FaTrash, FaUserPlus, FaTimesCircle, FaPencilAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa'; 
 import Modal from '../components/Modal';
 import EditJobForm from '../components/EditJobForm';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import './JobDetailPage.css';
+import './JobScheduleCalendar.css';
 
-function JobDetailPage({ jobs, onDeleteJob, onAssignTeamMember, onUnassignTeamMember, onUpdateJob }) {
-  const { team } = useContext(TeamContext);
+// A függvény megkapja a szükséges propokat az App-ból
+function JobDetailPage({ jobs, onDeleteJob, onUpdateJob, onAssignTeamMember, onUnassignTeamMember, onToggleJobSchedule }) {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
-  // Új állapot a szerkesztő modálhoz
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // FONTOS: A 'team' listát a Context-ből olvassuk ki
+  const { team } = useContext(TeamContext);
+
   const currentJobId = Number(jobId);
   const job = jobs.find(j => j.id === currentJobId);
 
-  // VÉGLEGES MEGOLDÁS: Ellenőrizzük, hogy MINDEN szükséges adat megérkezett-e, mielőtt bármit csinálnánk.
-  // Ha a 'job' VAGY a 'team' még nem létezik (undefined), akkor jelenítsünk meg egy töltőképernyőt vagy hibaüzenetet.
-  if (!job || !team) {
-    // Ezt lecserélhetjük egy szebb "Töltés..." komponensre is a jövőben
+  const [calendarKey, setCalendarKey] = useState(Date.now()); 
+  const [activeStartDate, setActiveStartDate] = useState(new Date());
+
+  // VÉGLEGES MEGOLDÁS: Ellenőrizzük, hogy MINDEN szükséges adat megérkezett-e
+  if (!job || !team) { // A 'team' már létezik a Context miatt
     return (
       <div className="job-detail-page">
         <h2>Adatok betöltése...</h2>
@@ -31,12 +39,7 @@ function JobDetailPage({ jobs, onDeleteJob, onAssignTeamMember, onUnassignTeamMe
       </div>
     );
   }
-
-    const handleUpdateSubmit = (updatedData) => {
-    onUpdateJob(updatedData);
-    setIsEditModalOpen(false); // Bezárjuk a modált mentés után
-  };
-
+  
   // A kód többi része innen már csak akkor fut le, ha 'job' és 'team' is biztosan létezik.
 
   const handleDelete = () => {
@@ -58,15 +61,54 @@ function JobDetailPage({ jobs, onDeleteJob, onAssignTeamMember, onUnassignTeamMe
     onUnassignTeamMember(currentJobId, memberId);
   };
 
-  return (
-    <>
+  const handleUpdateSubmit = (updatedData) => {
+    onUpdateJob(updatedData);
+    setIsEditModalOpen(false);
+  };
+
+  const handleJobDayClick = (date) => {
+    const dateString = toYYYYMMDD(date);
+    onToggleJobSchedule(currentJobId, dateString);
+    setCalendarKey(Date.now());
+  };
+
+  const getJobTileClassName = ({ date, view }) => {
+    if (view === 'month') {
+      const dateString = toYYYYMMDD(date);
+      if (job?.schedule?.includes(dateString)) {
+        return 'scheduled-day';
+      }
+    }
+    return null;
+  };
+  
+  const handleJobPrevMonth = () => {
+    setActiveStartDate(currentDate => {
+      const firstDayOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      firstDayOfCurrentMonth.setMonth(firstDayOfCurrentMonth.getMonth() - 1);
+      return firstDayOfCurrentMonth;
+    });
+    setCalendarKey(Date.now());
+  };
+
+  const handleJobNextMonth = () => {
+    setActiveStartDate(currentDate => {
+      const firstDayOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      firstDayOfCurrentMonth.setMonth(firstDayOfCurrentMonth.getMonth() + 1);
+      return firstDayOfCurrentMonth;
+    });
+    setCalendarKey(Date.now());
+  };
+
+
+ return (
+    <> {/* Fontos: A React fragment, mert több gyökérelem van */}
       <div className="job-detail-page">
         <div className="detail-header">
           <button onClick={() => navigate('/tasks')} className="back-button icon-button">
             <FaArrowLeft />
           </button>
           <div className="header-buttons">
-            {/* ÚJ SZERKESZTÉS GOMB */}
             <button onClick={() => setIsEditModalOpen(true)} className="edit-button">
               <FaPencilAlt /> Szerkesztés
             </button>
@@ -112,11 +154,31 @@ function JobDetailPage({ jobs, onDeleteJob, onAssignTeamMember, onUnassignTeamMe
           </div>
         </div>
         
-        <div className="detail-section placeholder">
-          <h3>Szükséges szerszámok</h3>
-          <p>Ez a funkció fejlesztés alatt áll.</p>
+        <div className="detail-section">
+          <h3>Munka ütemezése</h3>
+          <div className="calendar-wrapper-dark">
+            <Calendar
+              key={calendarKey}
+              onClickDay={handleJobDayClick}
+              tileClassName={getJobTileClassName}
+              locale="hu-HU"
+              showNeighboringMonth={false}
+              activeStartDate={activeStartDate}
+              prev2Label={null}
+              next2Label={null}
+            />
+            <div className="custom-calendar-nav-dark">
+              <button onClick={handleJobPrevMonth} className="custom-nav-button-dark">
+                <FaChevronLeft />
+              </button>
+              <button onClick={handleJobNextMonth} className="custom-nav-button-dark">
+                <FaChevronRight />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+
+      </div> {/* Itt záródik a fő div */}
 
       <Modal isOpen={isAssignModalOpen} onClose={() => setIsAssignModalOpen(false)}>
         <div className="assign-modal-content">

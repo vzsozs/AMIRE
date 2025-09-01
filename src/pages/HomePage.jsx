@@ -1,32 +1,48 @@
 // src/pages/HomePage.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react'; // useContext-et importálunk
+import { TeamContext } from '../context/TeamContext'; // TeamContext-et importálunk
 import { Link } from 'react-router-dom';
 import { FaUserCircle, FaExclamationTriangle, FaPlus } from 'react-icons/fa';
-import DailyTeamList from '../components/DailyTeamList';
-import { toYYYYMMDD } from '../utils/date'; // A biztonságos dátumfüggvény importálása
+// A DailyTeamList-et már nem használjuk itt, így az importot törölhetjük:
+// import DailyTeamList from '../components/DailyTeamList';
+import { toYYYYMMDD, normalizeDateToLocalMidnight } from '../utils/date';
 import './HomePage.css';
 
 function HomePage({ jobs, notes, onAddNote, onToggleNote }) {
   const [newNoteText, setNewNoteText] = useState('');
+  
+  // FONTOS: Most már a Context-ből olvassuk a team-et
+  const { team } = useContext(TeamContext);
 
-  const todayDateObject = useMemo(() => {
-    const today = new Date();
-    // Létrehozunk egy új dátumot a mai nap helyi éve, hónapja és napja alapján, de UTC időzónában
-    return new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-  }, []);
-  // A 'todayString' most már a biztonságos, helyi időzónát használó függvénnyel készül
+  // Normalizált mai dátum objektum
+  const todayDateObject = useMemo(() => normalizeDateToLocalMidnight(new Date()), []);
+  // Mai dátum string
   const todayString = useMemo(() => toYYYYMMDD(todayDateObject), [todayDateObject]);
 
-  const activeJobs = useMemo(() => jobs.filter(job => job.status === 'Folyamatban'), [jobs]);
+  // --- Adatok előkészítése ---
+
+  const activeJobs = useMemo(() => {
+    return jobs.filter(job => job.status === 'Folyamatban');
+  }, [jobs]);
+
+  // A "Mai Csapat" listát most már ITT, helyben számoljuk ki.
+  const availableToday = useMemo(() => {
+    // Biztosítjuk, hogy a 'team' tömb legyen
+    if (!Array.isArray(team)) {
+      return [];
+    }
+    return team.filter(member => member.availability?.includes(todayString));
+  }, [team, todayString]); // Akkor számolja újra, ha a team vagy a todayString változik.
+
   const upcomingDeadlines = useMemo(() => {
     return jobs.filter(job => {
-      const deadline = new Date(job.deadline);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); 
-      const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const deadline = normalizeDateToLocalMidnight(new Date(job.deadline)); // Normalizáljuk
+      const today = normalizeDateToLocalMidnight(new Date()); // Normalizáljuk
+      const nextWeek = normalizeDateToLocalMidnight(new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)); // Normalizáljuk
       return deadline >= today && deadline <= nextWeek;
     });
   }, [jobs]);
+
   const todaysNotes = useMemo(() => (notes && notes[todayString]) ? notes[todayString] : [], [notes, todayString]);
 
   const handleAddNoteClick = () => {
@@ -58,9 +74,21 @@ function HomePage({ jobs, notes, onAddNote, onToggleNote }) {
         </div>
       </div>
 
+      {/* --- A "MAI CSAPAT" KÁRTYA MOST MÁR A HELYI SZŰRÉS EREDMÉNYÉT MUTATJA --- */}
       <div className="dashboard-card">
-        <h2 className="card-title">Mai Csapat</h2>
-        <DailyTeamList date={todayDateObject} /> 
+        <h2 className="card-title">Mai Csapat ({availableToday.length})</h2>
+        <div className="team-list-mini">
+          {availableToday.length > 0 ? (
+            availableToday.map(member => (
+              <div key={member.id} className="team-item-mini">
+                <FaUserCircle style={{ color: member.color, fontSize: '1.5em' }} />
+                <span>{member.name}</span>
+              </div>
+            ))
+          ) : (
+            <p className="no-data-message">Ma senki sem jelezte, hogy elérhető.</p>
+          )}
+        </div>
       </div>
       
       {upcomingDeadlines.length > 0 && (

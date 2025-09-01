@@ -1,0 +1,87 @@
+/* src/components/CalendarDayDetailsModal.css */
+.calendar-day-details-modal {
+  padding: 0; /* A modal-content már ad paddinget */
+  color: var(--text-color);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.3em;
+  color: var(--primary-color);
+}
+
+.modal-header .close-button {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: var(--text-light-color);
+  cursor: pointer;
+}
+.modal-header .close-button:hover {
+  color: var(--text-color);
+}
+
+.modal-section {
+  margin-bottom: 20px;
+}
+
+.modal-section h3 {
+  font-size: 1.1em;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #444; /* Sötét háttér */
+  border-radius: 8px;
+  text-decoration: none;
+  color: white; /* Fehér szöveg */
+  transition: background-color 0.2s;
+}
+
+.detail-item:hover {
+  background-color: #555;
+}
+
+.detail-item .job-title,
+.detail-item .member-name {
+  font-weight: 500;
+}
+
+.detail-item .job-status,
+.detail-item .member-role {
+  font-size: 0.8em;
+  color: var(--text-light-color);
+}
+
+.job-status[data-status="Folyamatban"] { color: #FFA000; }
+.job-status[data-status="Befejezve"] { color: #388E3C; }
+.job-status[data-status="Függőben"] { color: #D32F2F; }
+
+.no-details-message {
+  font-style: italic;
+  color: var(--text-light-color);
+  padding: 10px;
+}

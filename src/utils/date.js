@@ -1,12 +1,17 @@
 // src/utils/date.js
+import moment from 'moment'; // Importáljuk a moment.js-t
 
-// Ez a függvény a felhasználó böngészőjének helyi időzónája alapján dolgozik.
+// Mostantól ez a függvény a moment.js-t használja a YYYY-MM-DD string generálásához.
+// Garantáltan időzóna-konzisztens lesz.
 export const toYYYYMMDD = (date) => {
-  if (!(date instanceof Date) || isNaN(date)) {
-    return null;
-  }
-  const year = date.getFullYear(); // Vissza: getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Vissza: getMonth()
-  const day = String(date.getDate()).padStart(2, '0');   // Vissza: getDate()
-  return `${year}-${month}-${day}`;
+  // A moment() funkció képes a Date objektumokat kezelni, és formázni őket.
+  // A 'YYYY-MM-DD' a moment.js formázási stringje.
+  return moment(date).format('YYYY-MM-DD');
+};
+
+// Ez a segédfüggvény már nem feltétlenül szükséges, de megtartjuk a biztonság kedvéért,
+// ha valahol explicit Date objektumot kellene létrehoznunk és normalizálnunk.
+export const normalizeDateToLocalMidnight = (date) => {
+  // A moment() már alapból a helyi időt veszi alapul, és a startOf('day') normalizálja éjfélre.
+  return moment(date).startOf('day').toDate(); // Visszaalakítjuk natív Date objektummá, ha kell
 };

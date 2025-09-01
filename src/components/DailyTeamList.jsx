@@ -1,43 +1,19 @@
 // src/components/DailyTeamList.jsx
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { TeamContext } from '../context/TeamContext';
+import { toYYYYMMDD } from '../utils/date'; // Visszaimportáljuk a közös függvényt
 import { FaUserCircle } from 'react-icons/fa';
 import './DailyTeamList.css';
-
-// 1. A BIZTONSÁG KEDVÉÉRT A SEGÉDFÜGGVÉNYT ITT, HELYBEN DEFINIÁLJUK
-const toYYYYMMDD = (date) => {
-  if (!(date instanceof Date) || isNaN(date)) {
-    console.error("toYYYYMMDD hibás dátumot kapott:", date);
-    return null;
-  }
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
 
 function DailyTeamList({ date }) {
   const { team } = useContext(TeamContext);
 
-  // 2. LÉPÉSRŐL-LÉPÉSRE TÖRTÉNŐ HIBAKERESÉS
-  console.log("--- DailyTeamList Render ---");
-  console.log("1. Megkapott 'date' prop:", date);
+  const dateString = useMemo(() => toYYYYMMDD(date), [date]);
 
-  const dateString = toYYYYMMDD(date);
-  console.log("2. Generált 'dateString':", dateString);
-  
-  console.log("3. Szűrés előtti 'team' lista:", team);
-
-  const availableOnDate = Array.isArray(team) 
-    ? team.filter(member => {
-        const hasDate = member.availability?.includes(dateString);
-        // Minden csapattagra kiírjuk, hogy a mai napon elérhető-e
-        // console.log(`  - ${member.name}: ${hasDate ? 'IGEN' : 'NEM'}`);
-        return hasDate;
-      }) 
-    : [];
-  console.log("4. Szűrés utáni 'availableOnDate' lista:", availableOnDate);
-  console.log("--------------------------");
+  const availableOnDate = useMemo(() => {
+    if (!Array.isArray(team)) return [];
+    return team.filter(member => member.availability?.includes(dateString));
+  }, [team, dateString]);
 
   return (
     <div className="daily-team-list">

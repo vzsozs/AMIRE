@@ -1,0 +1,99 @@
+/* src/pages/JobScheduleCalendar.css */
+
+/* Ezek a stílusok a TeamMemberDetailPage.css-ből jönnek, de ide is kellenek,
+   ha a Calendar komponenst külön szeretnéd stílusozni ezen az oldalon.
+   A legegyszerűbb, ha ezt a fájlt csak az egyedi stílusokra használjuk,
+   és az alap naptárstílust egy általánosabb helyen (pl. app.css) definiáljuk,
+   de most a gyorsaság kedvéért újrahasználjuk a dark-wrapper alapjait.
+*/
+
+/* Alap naptár stílus, ami a dark-wrapper-t használja */
+.calendar-wrapper-dark {
+  background-color: #3C3C3C;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: var(--shadow-light);
+  margin-top: 10px; /* Egy kis térköz a cím és a naptár között */
+}
+.calendar-wrapper-dark .react-calendar {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Navigáció (hónap és nyilak) */
+.calendar-wrapper-dark .react-calendar__navigation button {
+  color: #E0E0E0;
+  min-width: 44px;
+  background: none;
+  font-size: 1.2em;
+}
+.calendar-wrapper-dark .react-calendar__navigation button:hover {
+  background-color: #555;
+  border-radius: 6px;
+}
+.calendar-wrapper-dark .react-calendar__navigation__label {
+  font-weight: bold;
+  color: var(--primary-light);
+}
+
+/* Hét napjai (H, K, SZE...) */
+.calendar-wrapper-dark .react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #AAAAAA;
+  font-size: 0.8em;
+}
+
+/* Napok (cellák) */
+.calendar-wrapper-dark .react-calendar__tile {
+  border-radius: 8px;
+  color: #E0E0E0;
+  transition: background-color 0.2s;
+}
+.calendar-wrapper-dark .react-calendar__tile:enabled:hover {
+  background-color: #555;
+}
+.calendar-wrapper-dark .react-calendar__tile--now {
+  background: none;
+  box-shadow: inset 0 0 0 1px #888;
+}
+
+/* EZ A LEGFONTOSABB RÉSZ: Az ütemezett napok stílusa */
+.calendar-wrapper-dark .react-calendar__tile.scheduled-day {
+  background-color: var(--primary-color); /* Lila háttér */
+  color: white;
+  font-weight: bold;
+  box-shadow: inset 0 0 0 2px #313131; /* Belső sötét keret */
+}
+.calendar-wrapper-dark .react-calendar__tile.scheduled-day:hover {
+  background-color: var(--primary-light);
+}
+
+/* Az alsó navigációs sáv stílusa */
+.custom-calendar-nav-dark {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px 5px 0 5px;
+}
+
+.custom-nav-button-dark {
+  background: none;
+  border: none;
+  color: #E0E0E0;
+  font-size: 1em;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.custom-nav-button-dark:hover {
+  background-color: #555;
+}

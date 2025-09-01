@@ -140,6 +140,34 @@
   font-weight: bold;
 }
 
+.react-calendar__tile.deadline-day {
+  background-color: rgba(211, 47, 47, 0.4) !important; /* Piros, 40% átlátszóság */
+  border-radius: 8px; /* Lekerekítjük a sarkokat */
+}
+.react-calendar__tile.deadline-day:hover {
+    background-color: rgba(211, 47, 47, 0.6) !important; /* Hover-re kicsit sötétebb */
+}
+
+/* ÚJ STÍLUSOK AZ ÜTEMEZETT MUNKÁKHOZ */
+/* Konténer a színes csíkoknak */
+.scheduled-job-strips {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  position: absolute; /* A pöttyök alatt lesz */
+  bottom: 1px; /* Közelebb a cella aljához */
+  left: 0;
+  right: 0;
+}
+
+/* Egyedi színes csík a munkához */
+.scheduled-job-strip {
+  width: 15px; /* Kisebb szélesség, hogy több elférjen */
+  height: 3px;
+  border-radius: 1px;
+  /* A background-color inline style-ként jön */
+}
+
 /* Hétvégék pirossal */
 .react-calendar__month-view__days__day--weekend {
   color: #ff8a80;

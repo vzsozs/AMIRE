@@ -1,12 +1,13 @@
 // src/pages/TeamMemberDetailPage.jsx
-import React, { useState, useContext } from 'react'; // useContext importálása
-import { TeamContext } from '../context/TeamContext'; // 'useTeam' helyett 'TeamContext'
+import React, { useState, useContext } from 'react';
+import { TeamContext } from '../context/TeamContext';
+import { toYYYYMMDD } from '../utils/date';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaTrash, FaPhone, FaEnvelope, FaPencilAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa'; 
 import Modal from '../components/Modal';
 import EditTeamMemberForm from '../components/EditTeamMemberForm';
-import Calendar from 'react-calendar'; // NAPTÁR IMPORTÁLÁSA
-import 'react-calendar/dist/Calendar.css'; // Naptár alap stílusai
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import './JobDetailPage.css'; // A meglévő stílusok
 import './TeamMemberDetailPage.css'; // Új, egyedi stílusok a naptárhoz
 
@@ -15,8 +16,7 @@ function TeamMemberDetailPage() {
   const navigate = useNavigate();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
-  // 3. A Context-ből vesszük ki az összes szükséges adatot és függvényt
-   const { team, deleteTeamMember, updateTeamMember, toggleAvailability } = useContext(TeamContext);
+  const { team, deleteTeamMember, updateTeamMember, toggleAvailability } = useContext(TeamContext);
 
   const [key, setKey] = useState(Date.now());
   const [activeStartDate, setActiveStartDate] = useState(new Date());
@@ -26,27 +26,25 @@ function TeamMemberDetailPage() {
   const handleDelete = () => {
     const isConfirmed = window.confirm(`Biztosan törölni szeretné ${person.name} nevű csapattagot?`);
     if (isConfirmed) {
-      deleteTeamMember(person.id); // 4. A Context-ből kapott függvényt hívjuk
+      deleteTeamMember(person.id);
       navigate('/team');
     }
   };
 
   const handleUpdateSubmit = (updatedData) => {
-    updateTeamMember(updatedData); // 4. A Context-ből kapott függvényt hívjuk
+    updateTeamMember(updatedData);
     setIsEditModalOpen(false);
   };
   
   const handleDayClick = (date) => {
-    const dateString = date.toISOString().slice(0, 10);
-    toggleAvailability(person.id, dateString); // 4. A Context-ből kapott függvényt hívjuk
-    setKey(Date.now()); 
+    const dateString = toYYYYMMDD(date);
+    toggleAvailability(person.id, dateString);
+    setKey(Date.now());
   };
 
-  // ÚJ FÜGGVÉNY: CSS osztálynevet ad a naptár celláihoz
   const getTileClassName = ({ date, view }) => {
     if (view === 'month') {
-      const dateString = date.toISOString().slice(0, 10);
-      // Ha a dátum benne van a személy elérhetőségi listájában, adjuk hozzá az 'available-day' osztályt
+      const dateString = toYYYYMMDD(date);
       if (person?.availability?.includes(dateString)) {
         return 'available-day';
       }
@@ -70,8 +68,6 @@ function TeamMemberDetailPage() {
     });
   };
 
-
-
   if (!person) {
     return (
       <div className="job-detail-page">
@@ -81,13 +77,13 @@ function TeamMemberDetailPage() {
     );
   }
 
-   return (
-    <div className="job-detail-page">
+  return (
+    <> {/* Fontos: A React fragment, mert több gyökérelem van */}
+      <div className="job-detail-page">
         <div className="detail-header">
           <button onClick={() => navigate('/team')} className="back-button icon-button">
             <FaArrowLeft />
           </button>
-          {/* ÚJ RÉSZ: Gombok csoportosítása */}
           <div className="header-buttons">
             <button onClick={() => setIsEditModalOpen(true)} className="edit-button">
               <FaPencilAlt /> Szerkesztés
@@ -98,26 +94,39 @@ function TeamMemberDetailPage() {
           </div>
         </div>
       
-      <h1>{person.name}</h1>
-      <p className="job-status-badge" style={{ backgroundColor: person.color }}>{person.role}</p>
-      
-      {/* ÚJ RÉSZEK AZ ELÉRHETŐSÉGEKNEK */}
-      <div className="detail-section">
-        <h3>Elérhetőségek</h3>
-        <div className="calendar-wrapper-dark">
+        <h1>{person.name}</h1>
+        <p className="job-status-badge" style={{ backgroundColor: person.color }}>{person.role}</p>
+        
+        {/* ÚJRA HOZZÁADTUK AZ ELÉRHETŐSÉGEK SZEKCIÓT */}
+        <div className="detail-section">
+            <h3>Elérhetőségek</h3>
+            {person.phone && (
+                <p className="contact-info">
+                    <FaPhone /> <a href={`tel:${person.phone}`}>{person.phone}</a>
+                </p>
+            )}
+            {person.email && (
+                <p className="contact-info">
+                    <FaEnvelope /> <a href={`mailto:${person.email}`}>{person.email}</a>
+                </p>
+            )}
+            {!person.phone && !person.email && <p>Nincs megadva elérhetőség.</p>}
+        </div>
+
+        {/* AZ ELÉRHETŐSÉG NAPTÁR SZEKCIÓ */}
+        <div className="detail-section">
+          <h3>Elérhetőség a naptárban</h3> {/* Kicsit módosítottam a címet */}
+          <div className="calendar-wrapper-dark">
              <Calendar
               key={key}
               onClickDay={handleDayClick}
               tileClassName={getTileClassName}
               locale="hu-HU"
               showNeighboringMonth={false}
-              // A NÉZETET AZ ÚJ ÁLLAPOT IRÁNYÍTJA
               activeStartDate={activeStartDate}
-              // A BEÉPÍTETT NYILAKAT ELTÁVOLÍTJUK
               prev2Label={null}
               next2Label={null}
             />
-            {/* SAJÁT NAVIGÁCIÓS GOMBOK */}
             <div className="custom-calendar-nav-dark">
               <button onClick={handlePrevMonth} className="custom-nav-button-dark">
                 <FaChevronLeft />
@@ -127,7 +136,9 @@ function TeamMemberDetailPage() {
               </button>
             </div>
           </div>
-      </div>
+        </div>
+
+      </div> {/* Itt záródik a fő div */}
 
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <EditTeamMemberForm
@@ -136,9 +147,8 @@ function TeamMemberDetailPage() {
           onUpdateTeamMember={handleUpdateSubmit}
         />
       </Modal>
-    </div>
-    
+    </>
   );
 }
 
-export default TeamMemberDetailPage; // VÁLTOZÁS
+export default TeamMemberDetailPage;

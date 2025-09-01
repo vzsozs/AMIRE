@@ -119,13 +119,14 @@
   margin-bottom: 10px !important;
 }
 .contact-info a {
-  color: #E0E0E0; /* VÁLTOZÁS: Világos szövegszín */
+  color: #E0E0E0; /* Ezt javítottuk fehérre/világosra */
   text-decoration: none;
 }
 .contact-info a:hover {
   text-decoration: underline;
-  color: var(--primary-light); /* Hover-re maradhat a világos lila */
+  color: var(--primary-light);
 }
+
 .section-header {
   display: flex;
   justify-content: space-between;
