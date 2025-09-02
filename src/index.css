@@ -14,7 +14,7 @@
 
   /* Betűtípusok - a referencia kép alapján valószínűleg egy Google Font (pl. Roboto vagy Poppins) */
   /* Most az Inter-t használjuk, de később könnyen cserélhető */
-  font-family: 'Roboto', sans-serif; 
+  font-family: 'Nunito Sans', sans-serif; /* VÁLTOZÁS */
   line-height: 1.5;
   font-weight: 400;
 

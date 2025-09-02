@@ -1,8 +1,11 @@
 // src/App.jsx
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'; 
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // useNavigate importálása
 import { TeamProvider } from './context/TeamProvider'; 
-import moment from 'moment'; // EZ AZ ÚJ IMPORT
+// import moment from 'moment'; // Moment.js már nem kell itt, mert a util függvény használja
+import { ToastProvider } from './context/ToastProvider';
+import Toast from './components/Toast';
+import { JobProvider } from './context/JobProvider'; // ÚJ IMPORT
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -12,130 +15,76 @@ import CalendarPage from './pages/CalendarPage';
 import TeamPage from './pages/TeamPage';
 import TeamMemberDetailPage from './pages/TeamMemberDetailPage';
 import JobDetailPage from './pages/JobDetailPage';
+import Sidebar from './components/Sidebar';
+import LoginPage from './pages/LoginPage'; // ÚJ IMPORT
 
-const initialJobs = [
-  { id: 1, title: 'Gábor Lakásfelújítás', status: 'Folyamatban', deadline: '2025-09-15', description: 'Teljes lakásfestés, glettelés és mázolás.', assignedTeam: [1, 4], 
-    schedule: ['2025-09-01', '2025-09-02', '2025-09-03', '2025-09-04'], // ÚJ: ütemezés
-    color: '#FF6F00' // ÚJ: munka színe
-  },
-  { id: 2, title: 'Kovács Iroda Festés', status: 'Befejezve', deadline: '2025-08-20', description: 'Az iroda tárgyalójának és folyosójának tisztasági festése.', assignedTeam: [1], 
-    schedule: ['2025-08-18', '2025-08-19', '2025-08-20'],
-    color: '#3F51B5'
-  },
-  { id: 3, title: 'Nagy Családi Ház Vízszerelés', status: 'Folyamatban', deadline: '2025-09-30', description: 'Fürdőszoba és konyha vízvezetékeinek cseréje.', assignedTeam: [2], 
-    schedule: ['2025-09-29', '2025-09-30'],
-    color: '#00BCD4'
-  },
-  { id: 4, title: 'Tervezési Fázis - Új Projekt', status: 'Függőben', deadline: '2025-10-05', description: 'Új építkezés előkészítése, anyagbeszerzés tervezése.', assignedTeam: [], 
-    schedule: [],
-    color: '#8BC34A'
-  },
-];
-
-const initialTeam = [
-  { 
-    id: 1, name: 'Varga Béla', role: 'Festő, Mázoló', color: '#FF6F00', phone: '+36301234567', email: 'bela@amire.hu',
-    // Itt nem kell moment objektum, stringként maradnak
-    availability: ['2025-09-01', '2025-09-16', '2025-09-17'] 
-  },
-  { 
-    id: 2, name: 'Kiss Mária', role: 'Vízvezeték-szerelő', color: '#1E88E5', phone: '+36301112222', email: 'maria@amire.hu',
-    availability: ['2025-09-17', '2025-09-18', '2025-09-29', '2025-09-30'] 
-  },
-  { 
-    id: 3, name: 'Nagy Gábor', role: 'Projektvezető', color: '#00ACC1', phone: '+36209876543', email: 'gabor@amire.hu',
-    availability: ['2025-09-01', '2025-09-22', '2025-09-23'] 
-  },
-  { 
-    id: 4, name: 'Horváth Éva', role: 'Segédmunkás', color: '#7CB342', phone: '', email: 'eva@amire.hu',
-    availability: ['2025-09-01', '2025-09-16'] 
-  },
-];
 
 function App() {
-  const [jobs, setJobs] = useState(initialJobs);
-  const [dailyNotes, setDailyNotes] = useState({});
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // ÚJ ÁLLAPOT
+  // A 'jobs' és 'dailyNotes' állapotokat INNEN TÖRÖLTÜK, 
+  // mert a 'JobProvider' és 'HomePage' (dailyNotes) kezelik őket
+  // const [jobs, setJobs] = useState(initialJobs);
+  const [dailyNotes, setDailyNotes] = useState({}); // Ezt még át kell gondolni, de most bent hagyjuk
 
   useEffect(() => {
-    const today = moment();
-    const yesterday = moment().subtract(1, 'days');
+    // ... (Ha van itt jegyzet öröklési logika, az ide jönne)
+    // Most az egyszerűség kedvéért ezt kikommentelem/törlöm, mivel a fő jegyzetek munkákhoz kötöttek.
+    // Ha a napi jegyzeteket megtartjuk, akkor a logika marad.
+    // Ha nem, akkor a dailyNotes state is törölhető.
+  }, []); 
 
-    const todayString = today.format('YYYY-MM-DD');
-    const yesterdayString = yesterday.format('YYYY-MM-DD');
 
-    setDailyNotes(prevNotes => {
-      const yesterdayNotes = prevNotes[yesterdayString] || [];
-      const todayNotes = prevNotes[todayString] || [];
-      const uncompletedFromYesterday = yesterdayNotes.filter(note => !note.completed);
-      if (uncompletedFromYesterday.length === 0) return prevNotes;
-      const todayNoteIds = new Set(todayNotes.map(note => note.id));
-      const notesToMove = uncompletedFromYesterday.filter(note => !todayNoteIds.has(note.id));
-      return { ...prevNotes, [todayString]: [...notesToMove, ...todayNotes] };
-    });
+    // ÚJ FÜGGVÉNY: Bejelentkezés kezelése
+  const handleLogin = async (username, password) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      if (!response.ok) {
+        throw new Error('Hibás adatok');
+      }
+      const data = await response.json();
+      localStorage.setItem('amire_auth_token', data.token); // Token tárolása
+      setIsAuthenticated(true);
+      return true; // Sikeres bejelentkezés
+    } catch (error) {
+      console.error("Bejelentkezési hiba:", error);
+      return false; // Sikertelen bejelentkezés
+    }
+  };
+
+    // Ellenőrizzük a tokent az alkalmazás indulásakor
+  useEffect(() => {
+    const token = localStorage.getItem('amire_auth_token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
   }, []);
 
-  const handleAddJob = (newJobData) => {
-  const newJob = {
-    id: Date.now(),
-    description: 'Nincs leírás megadva.',
-    assignedTeam: newJobData.assignedTeam || [],
-    // ÚJ: Alapértelmezett szín és üres ütemezés az új munkának
-    color: newJobData.color || '#607D8B', // Ha nincs megadva szín, egy alap szürke
-    schedule: newJobData.schedule || [],
-    ...newJobData,
-  };
-  setJobs(prevJobs => [...prevJobs, newJob]);
-};
-  const handleDeleteJob = (jobIdToDelete) => {
-    setJobs(prevJobs => prevJobs.filter(job => job.id !== jobIdToDelete));
-  };
-  
-  const handleUpdateJob = (updatedJobData) => {
-    setJobs(prevJobs => prevJobs.map(job => 
-      job.id === updatedJobData.id 
-        ? { 
-            ...job, 
-            ...updatedJobData,
-            // Biztosítjuk, hogy a deadline is YYYY-MM-DD formátumú string legyen
-            deadline: moment(updatedJobData.deadline).format('YYYY-MM-DD') 
-          } 
-        : job
-    ));
-  };
-  
-  // ÚJ FÜGGVÉNY: Munka ütemezésének váltása (hozzáadás/törlés egy napról)
-  const handleToggleJobSchedule = (jobId, dateString) => {
-    setJobs(prevJobs => prevJobs.map(job => {
-      if (job.id === jobId) {
-        const schedule = job.schedule || [];
-        if (schedule.includes(dateString)) {
-          return { ...job, schedule: schedule.filter(d => d !== dateString) };
-        } else {
-          return { ...job, schedule: [...schedule, dateString] };
-        }
-      }
-      return job;
-    }));
+  // ÚJ FÜGGVÉNY: Kijelentkezés
+  const handleLogout = () => {
+    localStorage.removeItem('amire_auth_token');
+    setIsAuthenticated(false);
   };
 
-  const handleAssignTeamMember = (jobId, memberId) => {
-    setJobs(prevJobs => prevJobs.map(job => {
-      if (job.id === jobId && !job.assignedTeam.includes(memberId)) {
-        return { ...job, assignedTeam: [...job.assignedTeam, memberId] };
-      }
-      return job;
-    }));
-  };
+  // AZ ÖSSZES handle...Job és handle...TodoItem FÜGGVÉNYT INNEN TÖRÖLTÜK,
+  // MERT A JobProvider KEZELI ŐKET
+  /*
+  const handleAddJob = (...) => { ... };
+  const handleDeleteJob = (...) => { ... };
+  const handleUpdateJob = (...) => { ... };
+  const handleAssignTeamMember = (...) => { ... };
+  const handleUnassignTeamMember = (...) => { ... };
+  const handleToggleJobSchedule = (...) => { ... };
+  const handleAddTodoItem = (...) => { ... };
+  const handleToggleTodoItem = (...) => { ... };
+  const handleDeleteTodoItem = (...) => { ... };
+  */
 
-  const handleUnassignTeamMember = (jobId, memberId) => {
-    setJobs(prevJobs => prevJobs.map(job => {
-      if (job.id === jobId) {
-        return { ...job, assignedTeam: prevJobs.assignedTeam.filter(id => id !== memberId) };
-      }
-      return job;
-    }));
-  };
-
+  // Csak a napi jegyzetekhez tartozó függvények maradnak, ha megtartjuk a napi jegyzeteket
+  // Később ezt is átadhatjuk egy Context-nek, ha bonyolódik
   const handleAddNote = (dateString, noteText) => {
     const newNote = { id: Date.now(), text: noteText, completed: false };
     setDailyNotes(prevNotes => {
@@ -152,37 +101,44 @@ function App() {
     });
   };
 
+
   return (
-    <TeamProvider initialTeam={initialTeam}>
-      <Router>
-        <div className="App">
-          <Header />
-          <main className="app-content">
-            <Routes>
-              <Route path="/" element={<HomePage jobs={jobs} notes={dailyNotes} onAddNote={handleAddNote} onToggleNote={handleToggleNote} />} />
-              <Route path="/tasks" element={<TasksPage jobs={jobs} onAddJob={handleAddJob} />} />
-              <Route
-                path="/tasks/:jobId"
-                element={
-                  <JobDetailPage
-                    jobs={jobs}
-                    onDeleteJob={handleDeleteJob}
-                    onUpdateJob={handleUpdateJob}
-                    onAssignTeamMember={handleAssignTeamMember}
-                    onUnassignTeamMember={handleUnassignTeamMember}
-                    onToggleJobSchedule={handleToggleJobSchedule} // ÚJ PROP
-                  />
-                }
-              />
-              <Route path="/team" element={<TeamPage />} />
-              <Route path="/team/:memberId" element={<TeamMemberDetailPage />} />
-              <Route path="/calendar" element={<CalendarPage jobs={jobs} />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </TeamProvider>
+    <ToastProvider>
+      <TeamProvider>
+        <JobProvider>
+          <Router>
+            <div className="App-layout-wrapper">
+              {isAuthenticated ? ( // Ha be van jelentkezve, mutassuk az alkalmazást
+                <>
+                  <Header onLogout={handleLogout} /> {/* onLogout prop a headernek */}
+              <div className="main-content-area">
+                <Sidebar />
+                <main className="app-content">
+                  <Routes>
+                    {/* A HomePage már nem kapja meg a 'jobs' és a 'notes' propokat, Context-ből olvassa */}
+                    <Route path="/" element={<HomePage notes={dailyNotes} onAddNote={handleAddNote} onToggleNote={handleToggleNote} />} />
+                    {/* A TasksPage és JobDetailPage már nem kapja meg a 'jobs' és 'on...' propokat */}
+                    <Route path="/tasks" element={<TasksPage />} />
+                    <Route path="/tasks/:jobId" element={<JobDetailPage />} />
+                    {/* A CalendarPage már nem kapja meg a 'jobs' propot */}
+                    <Route path="/calendar" element={<CalendarPage />} />
+                    {/* A TeamPage és TeamMemberDetailPage sem kap már 'team' propot */}
+                    <Route path="/team" element={<TeamPage />} />
+                    <Route path="/team/:memberId" element={<TeamMemberDetailPage />} />
+                  </Routes>
+                </main>
+              </div>
+              <Footer />
+               </>
+              ) : ( // Ha nincs bejelentkezve, mutassuk a login oldalt
+                <LoginPage onLogin={handleLogin} />
+              )}
+            </div>
+          </Router>
+        </JobProvider>
+      </TeamProvider>
+      <Toast />
+    </ToastProvider>
   );
 }
 

@@ -1,6 +1,7 @@
 // src/pages/CalendarPage.jsx
 import React, { useState, useContext } from 'react';
 import { TeamContext } from '../context/TeamContext';
+import { JobContext } from '../context/JobContext'; // FONTOS: JobContext importálva
 import { toYYYYMMDD, normalizeDateToLocalMidnight } from '../utils/date';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -11,8 +12,9 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Modal from '../components/Modal';
 import CalendarDayDetailsModal from '../components/CalendarDayDetailsModal';
 
-function CalendarPage({ jobs }) {
+function CalendarPage() {
   const { team } = useContext(TeamContext);
+  const { jobs } = useContext(JobContext); // FONTOS: Jobs lekérése a Context-ből
   const [selectedDate, setSelectedDate] = useState(() => normalizeDateToLocalMidnight(new Date()));
   
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -64,17 +66,6 @@ function CalendarPage({ jobs }) {
       }
     }
     return null;
-  };
-
-  const formatNavigationLabel = (date) => {
-    const year = date.getFullYear();
-    const month = date.toLocaleDateString('hu-HU', { month: 'long' });
-    return (
-      <div className="custom-navigation-label">
-        <div className="year">{year}.</div>
-        <div className="month">{month}</div>
-      </div>
-    );
   };
 
   const handlePrevMonth = () => {
@@ -145,7 +136,7 @@ function CalendarPage({ jobs }) {
         {modalDate && (
           <CalendarDayDetailsModal
             date={modalDate}
-            jobs={jobs}
+            //jobs={jobs}
             onClose={handleCloseDetailsModal}
           />
         )}

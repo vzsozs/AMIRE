@@ -1,20 +1,21 @@
 // src/components/CalendarDayDetailsModal.jsx
 import React, { useContext, useMemo } from 'react';
 import { TeamContext } from '../context/TeamContext';
+import { JobContext } from '../context/JobContext'; // ÚJ IMPORT
 import { toYYYYMMDD } from '../utils/date';
 import { Link } from 'react-router-dom';
-import { FaUserCircle, FaBriefcase, FaTimes, FaCalendarAlt } from 'react-icons/fa'; // FaCalendarAlt importálása
+import { FaUserCircle, FaBriefcase, FaTimes, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
 import './CalendarDayDetailsModal.css';
 
-function CalendarDayDetailsModal({ date, jobs, onClose }) {
+// A komponens most már csak a 'date' és 'onClose' propokat kapja
+function CalendarDayDetailsModal({ date, onClose }) {
   const { team } = useContext(TeamContext);
+  const { jobs } = useContext(JobContext); // Itt olvassuk ki a 'jobs' listát a Context-ből
   
   const dateString = useMemo(() => toYYYYMMDD(date), [date]);
 
-  // Lekérdezzük a munkákat
   const jobsOnSelectedDay = useMemo(() => {
     return Array.isArray(jobs) ? jobs.filter(job => {
-      // Szűrjük a határidős ÉS az ütemezett munkákat is
       return job.deadline === dateString || job.schedule?.includes(dateString);
     }) : [];
   }, [jobs, dateString]);
@@ -26,8 +27,7 @@ function CalendarDayDetailsModal({ date, jobs, onClose }) {
   return (
     <div className="calendar-day-details-modal">
       <div className="modal-header">
-        <h2>Részletek: {date.toLocaleDateString('hu-HU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
-        <button onClick={onClose} className="close-button"><FaTimes /></button>
+        <h2>{date.toLocaleDateString('hu-HU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
       </div>
 
       <div className="modal-section">
@@ -37,8 +37,18 @@ function CalendarDayDetailsModal({ date, jobs, onClose }) {
             {jobsOnSelectedDay.map(job => (
               <Link to={`/tasks/${job.id}`} key={job.id} onClick={onClose} className="detail-item" style={{ borderLeft: `5px solid ${job.color}` }}>
                 <span className="job-title">{job.title}</span>
-                {job.deadline === dateString && <span className="job-status" style={{ color: '#ff8a80' }}>Határidő!</span>}
-                {job.schedule?.includes(dateString) && <span className="job-status" style={{ color: job.color }}>Ütemezett</span>}
+                <div className="job-indicators">
+                    {job.deadline === dateString && (
+                        <span className="job-indicator deadline-indicator">
+                            <FaExclamationTriangle /> Határidő!
+                        </span>
+                    )}
+                    {job.schedule?.includes(dateString) && (
+                        <span className="job-indicator schedule-indicator">
+                            <FaCalendarAlt /> Ütemezett
+                        </span>
+                    )}
+                </div>
               </Link>
             ))}
           </div>

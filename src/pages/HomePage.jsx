@@ -1,18 +1,20 @@
 // src/pages/HomePage.jsx
-import React, { useState, useMemo, useContext } from 'react'; // useContext-et importálunk
+import React, { useMemo, useContext } from 'react'; // useContext-et importálunk
 import { TeamContext } from '../context/TeamContext'; // TeamContext-et importálunk
+import { useJobs } from '../context/useJobs';
 import { Link } from 'react-router-dom';
-import { FaUserCircle, FaExclamationTriangle, FaPlus } from 'react-icons/fa';
-// A DailyTeamList-et már nem használjuk itt, így az importot törölhetjük:
-// import DailyTeamList from '../components/DailyTeamList';
+import { JobContext } from '../context/JobContext'; // ÚJ IMPORT
+import EmptyState from '../components/EmptyState'; // ÚJ IMPORT
+import { FaUserCircle, FaExclamationTriangle, FaPlus, FaCheckCircle, FaTasks, FaUsers } from 'react-icons/fa'; // FaTasks, FaUsers ikonok
 import { toYYYYMMDD, normalizeDateToLocalMidnight } from '../utils/date';
 import './HomePage.css';
 
-function HomePage({ jobs, notes, onAddNote, onToggleNote }) {
-  const [newNoteText, setNewNoteText] = useState('');
+function HomePage() { // Már nem kapja meg a 'jobs' propot
+  //const [newNoteText, setNewNoteText] = useState('');
   
   // FONTOS: Most már a Context-ből olvassuk a team-et
   const { team } = useContext(TeamContext);
+  const { jobs } = useJobs();
 
   // Normalizált mai dátum objektum
   const todayDateObject = useMemo(() => normalizeDateToLocalMidnight(new Date()), []);
@@ -42,20 +44,57 @@ function HomePage({ jobs, notes, onAddNote, onToggleNote }) {
       return deadline >= today && deadline <= nextWeek;
     });
   }, [jobs]);
+  
+  // ÚJ: Még el nem végzett to-do elemek összegyűjtése az összes munkából
+  const uncompletedTodosToday = useMemo(() => {
+    const todayTodos = [];
+    jobs.forEach(job => {
+      (job.todoList || []).forEach(todo => {
+        // Csak azokat a to-do-kat vesszük figyelembe, amik nincsenek elvégezve
+        // és valamilyen módon "maira" vonatkoznak (pl. a munka ma ütemezve van)
+        // Ezt a logikát később finomíthatjuk!
+        if (!todo.completed && job.schedule?.includes(todayString)) {
+          todayTodos.push({ ...todo, jobId: job.id, jobTitle: job.title, jobColor: job.color });
+        }
+      });
+    });
+    return todayTodos;
+  }, [jobs, todayString]);
 
-  const todaysNotes = useMemo(() => (notes && notes[todayString]) ? notes[todayString] : [], [notes, todayString]);
+  //const todaysNotes = useMemo(() => (notes && notes[todayString]) ? notes[todayString] : [], [notes, todayString]);
 
-  const handleAddNoteClick = () => {
+  /*const handleAddNoteClick = () => {
     if (newNoteText.trim() === '') return;
     onAddNote(todayString, newNoteText);
     setNewNoteText('');
-  };
+  };*/
 
   return (
     <div className="home-page-container">
       <div className="home-header">
-        <h1>Üdvözöljük!</h1>
+        <h1>Helló</h1>
         <p>Itt a mai nap legfontosabb információi.</p>
+      </div>
+
+      {/* --- AKTUÁLIS TEENDŐK KÁRTYA (ÚJ NÉV) --- */}
+      <div className="dashboard-card notes-card">
+        <h2 className="card-title">Aktuális Teendők</h2> {/* ÚJ CÍM */}
+        <div className="notes-list"> {/* Újrahasználjuk a notes-list osztályt */}
+          {uncompletedTodosToday.length > 0 ? (
+            uncompletedTodosToday.map(todo => (
+              <Link to={`/tasks/${todo.jobId}`} key={todo.id} className="note-item" style={{ borderLeft: `5px solid ${todo.jobColor}` }}>
+                <span className="note-text">{todo.text} ({todo.jobTitle})</span>
+                <FaCheckCircle style={{ color: '#4CAF50' }} /> {/* Egy pipa ikon, jelezve, hogy teendő */}
+              </Link>
+            ))
+          ) : (
+            <EmptyState 
+              icon={<FaTasks />} 
+              title="Nincs aktuális teendő" 
+              message="Jó hír, ma nincs elvégzetlen feladatod, vagy a munkák nincsenek ütemezve mára." 
+            />
+          )}
+        </div>
       </div>
 
       <div className="dashboard-card">
@@ -69,7 +108,11 @@ function HomePage({ jobs, notes, onAddNote, onToggleNote }) {
               </Link>
             ))
           ) : (
-            <p className="no-data-message">Nincsenek folyamatban lévő munkák.</p>
+            <EmptyState 
+              icon={<FaTasks />} 
+              title="Nincs aktív projekt" 
+              message="Jelenleg nincsenek folyamatban lévő munkák." 
+            />
           )}
         </div>
       </div>
@@ -104,39 +147,6 @@ function HomePage({ jobs, notes, onAddNote, onToggleNote }) {
           </div>
         </div>
       )}
-      
-      <div className="dashboard-card notes-card">
-        <h2 className="card-title">Napi Jegyzetek</h2>
-        <div className="notes-list">
-          {todaysNotes.length > 0 ? (
-            todaysNotes.map(note => (
-              <div 
-                key={note.id} 
-                className={`note-item ${note.completed ? 'completed' : ''}`}
-                onClick={() => onToggleNote(todayString, note.id)}
-              >
-                <span className="note-text">{note.text}</span>
-                <div className="checkmark-box"></div>
-              </div>
-            ))
-          ) : (
-            <p className="no-data-message">Nincsenek mai jegyzetek.</p>
-          )}
-        </div>
-        <div className="add-note-form">
-          <input 
-            type="text" 
-            className="add-note-input"
-            placeholder="Új jegyzet hozzáadása..."
-            value={newNoteText}
-            onChange={(e) => setNewNoteText(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleAddNoteClick()}
-          />
-          <button onClick={handleAddNoteClick} className="add-note-button">
-            <FaPlus />
-          </button>
-        </div>
-      </div>
 
     </div>
   );

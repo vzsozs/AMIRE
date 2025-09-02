@@ -1,0 +1,66 @@
+/* src/components/Sidebar.css */
+.app-sidebar {
+  width: 220px;
+  background-color: #1616161a; /* Ugyanaz a szín, mint a háttér */
+  color: #E0E0E0;
+  height: 100%;
+  padding: 20px 0;
+  /* Eltávolítjuk a box-shadow-t, mert függőleges vonalat akarunk */
+  /* box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2); */ 
+  z-index: 50;
+  display: none;
+
+  /* ÚJ: Függőleges elválasztó vonal */
+  border-right: 1px solid #353535; /* Halványabb szürke vonal */
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+}
+
+.sidebar-header {
+  /* TÖRÖLJÜK A FEJLÉC STÍLUSAIT, mert nem kell a felirat és a vonal */
+  /* padding: 0 20px 20px 20px;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-bottom: 1px solid #555;
+  margin-bottom: 20px; */
+  display: none; /* TELJESEN ELTÜNTETJÜK A FEJLÉCET */
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 20px; /* Új padding, hogy ne tapadjon felülre */
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 20px;
+  color: #E0E0E0;
+  text-decoration: none;
+  font-size: 1em;
+  transition: background-color 0.2s, color 0.2s;
+  border-left: 5px solid transparent;
+}
+
+.sidebar-nav-item:hover {
+  background-color: #555;
+  color: white;
+}
+
+.sidebar-nav-item.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-left: 5px solid var(--primary-light);
+  font-weight: 500;
+}
+
+.sidebar-nav-item .icon {
+  font-size: 1.4em;
+}

@@ -15,8 +15,8 @@
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.3em;
-  color: var(--primary-color);
+  font-size: 1.25em;
+  color: #E0E0E0; /* Világosszürke */
 }
 
 .modal-header .close-button {
@@ -84,4 +84,31 @@
   font-style: italic;
   color: var(--text-light-color);
   padding: 10px;
+}
+/* Konténer a jelzőknek */
+.job-indicators {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.job-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: 500;
+  color: white;
+}
+
+/* Piros háttér a Határidő jelzőnek */
+.deadline-indicator {
+  background-color: #D32F2F; /* Piros, mint a törlés gomb */
+}
+
+/* Szürke háttér az Ütemezett jelzőnek */
+.schedule-indicator {
+  background-color: #555; /* Sötét háttér */
 }

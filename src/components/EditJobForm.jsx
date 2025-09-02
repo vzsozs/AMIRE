@@ -1,29 +1,42 @@
 // src/components/EditJobForm.jsx
-import React, { useState, useEffect } from 'react';
-import './AddJobForm.css'; // Újrahasznosítjuk a stílusokat
+import React, { useState, useEffect, useContext } from 'react'; // useContext importálása
+import { JobContext } from '../context/JobContext'; // JobContext importálása
+import ColorPalette from './ColorPalette';
+import './AddJobForm.css';
+
+// Előre definiált színek listája
+const predefinedColors = [
+  '#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3',
+  '#00BCD4', '#4CAF50', '#CDDC39', '#FFC107', '#FF9800', '#795548'
+];
 
 // A komponens megkapja a szerkesztendő munka adatait (jobToEdit)
-function EditJobForm({ jobToEdit, onCancel, onUpdateJob }) {
+// Az 'onUpdateJob' propot már nem kapja meg, hanem a Context-ből veszi
+function EditJobForm({ jobToEdit, onCancel }) { 
   const [title, setTitle] = useState('');
   const [status, setStatus] = useState('Folyamatban');
   const [deadline, setDeadline] = useState('');
   const [description, setDescription] = useState('');
+  const [color, setColor] = useState(predefinedColors[0]);
 
-  // A useEffect hook segítségével töltjük fel az űrlapot, amint a komponens megkapja a munka adatait
+  // Itt olvassuk ki az 'updateJob' függvényt a Context-ből
+  const { updateJob } = useContext(JobContext); 
+
   useEffect(() => {
     if (jobToEdit) {
       setTitle(jobToEdit.title);
       setStatus(jobToEdit.status);
       setDeadline(jobToEdit.deadline);
       setDescription(jobToEdit.description);
+      setColor(jobToEdit.color || predefinedColors[0]);
     }
-  }, [jobToEdit]); // Ez a kód lefut, ha a jobToEdit megváltozik
+  }, [jobToEdit]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Létrehozunk egy objektumot a frissített adatokkal
-    const updatedData = { id: jobToEdit.id, title, status, deadline, description };
-    onUpdateJob(updatedData);
+    const updatedData = { id: jobToEdit.id, title, status, deadline, description, color };
+    updateJob(updatedData); // A Context-ből kapott 'updateJob'-ot hívjuk
+    onCancel(); // Bezárjuk a modált mentés után
   };
 
   return (
@@ -54,6 +67,16 @@ function EditJobForm({ jobToEdit, onCancel, onUpdateJob }) {
           rows="4"
         ></textarea>
       </div>
+
+      <div className="form-group">
+        <label>Munka színe</label>
+        <ColorPalette
+          colors={predefinedColors}
+          selectedColor={color}
+          onColorChange={setColor}
+        />
+      </div>
+
       <div className="form-actions">
         <button type="button" className="button-secondary" onClick={onCancel}>Mégse</button>
         <button type="submit" className="button-primary">Módosítások mentése</button>

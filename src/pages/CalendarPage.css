@@ -191,13 +191,14 @@
 /* Konténer a napi jelölőknek */
 .day-markers {
   position: absolute;
-  bottom: 5px;
+  bottom: 0; /* A cella aljára igazítjuk az egész konténert */
   left: 0;
   right: 0;
   display: flex;
-  flex-direction: column; /* A pöttyök és a csík egymás alatt lesznek */
-  align-items: center; /* Vízszintesen középre */
-  gap: 4px; /* Térköz a pöttyök sora és a csík között */
+  flex-direction: column; /* Egymás alá kerülnek */
+  align-items: center;
+  gap: 1px; /* Nagyon kicsi rés a pöttyök és a csíkok között */
+  padding-bottom: 2px; /* Kicsit feljebb tolja az egész blokkot a cella aljáról */
 }
 
 /* Konténer a színes pöttyöknek */
@@ -205,11 +206,27 @@
   display: flex;
   justify-content: center;
   gap: 3px;
+  margin-bottom: 9px; /* Kicsit lejjebb tolja magát a csíkoktól */
+  padding-top: 2px; /* Kicsit feljebb tolja a pöttyöket a cellán belül */
 }
 
 .availability-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  /* A színét inline style-ként kapja meg */
+}
+
+/* Módosított stílus a színes csíkoknak - Ezek kerülnek alulra */
+.scheduled-job-strips {
+  display: flex;
+  flex-direction: column; /* FONTOS: Most már ezek is egymás alatt vannak */
+  justify-content: center;
+  align-items: center;
+  gap: 0px; /* Nagyon kicsi rés a csíkok között */
+}
+
+.scheduled-job-strip {
+  width: 100%;
+  height: 3px;
+  border-radius: 1px;
 }

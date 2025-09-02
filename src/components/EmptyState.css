@@ -1,0 +1,33 @@
+/* src/components/EmptyState.css */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+  color: var(--text-light-color);
+  background-color: #3C3C3C; /* Sötétebb háttér */
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  margin-top: 20px;
+}
+
+.empty-state-icon {
+  font-size: 3em;
+  color: #AAAAAA; /* Halványabb ikon szín */
+  margin-bottom: 15px;
+}
+
+.empty-state-title {
+  font-size: 1.4em;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #E0E0E0;
+}
+
+.empty-state-message {
+  font-size: 1em;
+  line-height: 1.5;
+  margin: 0;
+}

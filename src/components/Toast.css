@@ -1,0 +1,44 @@
+/* src/components/Toast.css */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2000; /* Még a modálok felett is */
+  pointer-events: none; /* Ne akadályozza a kattintásokat */
+}
+
+.toast-message {
+  background-color: #333;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-size: 0.9em;
+  opacity: 0;
+  animation: fadeInOut 3s forwards; /* Animáció hozzáadása */
+}
+
+/* Színek a különböző típusokhoz */
+.toast-success {
+  background-color: #4CAF50; /* Zöld */
+}
+
+.toast-error {
+  background-color: #D32F2F; /* Piros */
+}
+
+.toast-info {
+  background-color: #2196F3; /* Kék */
+}
+
+/* Animáció a megjelenítéshez és eltűnéshez */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
+}

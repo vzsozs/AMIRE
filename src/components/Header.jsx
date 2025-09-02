@@ -1,12 +1,16 @@
 // src/components/Header.jsx
 import React from 'react';
-import { FaBars } from 'react-icons/fa'; // Menü ikon
+import { FaSignOutAlt } from 'react-icons/fa';
 
-function Header() {
+function Header({ onLogout }) {
+  console.log("Header renderelt. onLogout prop:", onLogout); // Ellenőrizzük a propot
+
   return (
     <header className="app-header">
       <span>AMIRE</span>
-      <FaBars style={{ fontSize: '1.2em', color: 'var(--text-color)' }} />
+      <button onClick={onLogout} className="logout-button">
+        <FaSignOutAlt />
+      </button>
     </header>
   );
 }

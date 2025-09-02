@@ -1,0 +1,82 @@
+/* src/pages/LoginPage.css */
+.login-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-color); /* Az App alap háttérszíne */
+}
+
+.login-box {
+  background-color: var(--app-background-color); /* Az App belső háttérszíne */
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-medium);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-box h1 {
+  font-family: 'Swanky and Moo Moo', cursive;
+  font-size: 3em;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.login-box .subtitle {
+  color: var(--text-light-color);
+  margin-bottom: 30px;
+}
+
+.login-box .form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.login-box label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1em;
+  background-color: #333;
+  color: #E0E0E0;
+}
+
+.login-box input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.login-button {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: var(--primary-light);
+}
+
+.error-message {
+  color: #D32F2F; /* Piros hibaüzenet */
+  margin-top: -10px;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}

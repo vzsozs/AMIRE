@@ -235,3 +235,140 @@
 .icon-button svg {
   margin: 0; /* Az ikonnak ne legyen extra margója */
 }
+
+/* To-Do lista konténer */
+.todo-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #3C3C3C; /* Sötét háttér a to-do listának */
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background-color: #444; /* Sötétebb háttér az elemeknek */
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.todo-item:hover {
+  background-color: #555;
+}
+
+.todo-item.completed {
+  background-color: #333;
+  opacity: 0.7;
+}
+
+.todo-checkbox {
+  background: none;
+  border: none;
+  color: var(--primary-light);
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0;
+  display: flex; /* Középre igazítja az ikont */
+  align-items: center;
+}
+.todo-item.completed .todo-checkbox {
+  color: #4CAF50; /* Zöld pipa, ha kész */
+}
+
+.todo-text {
+  flex-grow: 1;
+  color: #E0E0E0;
+}
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: var(--text-light-color);
+}
+
+.todo-delete-button {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1em;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+.todo-delete-button:hover {
+  color: #D32F2F; /* Piros törléskor */
+}
+
+/* Elvégzett teendők szekció */
+.completed-todos-section {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #555;
+}
+
+.toggle-completed-button {
+  width: 100%;
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+}
+.toggle-completed-button:hover {
+  background-color: #777;
+}
+
+.completed-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Új teendő hozzáadása form */
+.add-todo-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  border-top: 1px solid #555;
+  padding-top: 15px;
+}
+.add-todo-input {
+  flex-grow: 1;
+  background-color: #222;
+  border: 1px solid #555;
+  border-radius: 6px;
+  color: var(--text-color);
+  padding: 10px;
+  font-size: 1em;
+}
+.add-todo-input::placeholder {
+  color: var(--text-light-color);
+}
+.add-todo-button {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  color: white; /* VALÓSZÍNŰLEG EZ HIÁNYZIK VAGY ROSSZ */
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0; /* Biztosítjuk, hogy ne legyen extra padding */
+}
+.add-todo-button:hover {
+  background-color: var(--primary-light);
+}

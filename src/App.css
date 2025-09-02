@@ -2,65 +2,143 @@
 .App {
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between;  Ezt kiszedjük, mert a header és footer fix magasságú */
   align-items: center;
 
   width: 100%;
-  max-width: 450px; /* Mobil szélesség */
-  height: 100%; /* Teljes magasság */
-  max-height: 900px; /* Egy tablet vagy nagyobb telefon magassága */
+  max-width: 450px; /* Alapértelmezett mobil szélesség */
+  height: 100%;
+  max-height: 900px;
   margin: 0 auto;
-  background-color: var(--app-background-color); /* Fehér háttér */
-  box-shadow: var(--shadow-medium); /* Képhez hasonló árnyék */
-  border-radius: 12px; /* Lekerekítettebb sarkok */
-  overflow: hidden; /* Elrejti a tartalom, ami kilóg */
+  background-color: var(--app-background-color);
+  box-shadow: var(--shadow-medium);
+  border-radius: 12px;
+  overflow: hidden;
 
-  /* Fixáljuk a telefon arányt, ha kisebb a képernyő, akkor is */
-  /* Kisebb képernyőkön levesszük a margin-t és a border-radiust */
+  /* Reszponzív módosítások */
   @media (max-width: 450px) {
+    /* Ezt a részt módosítottuk. Ha kisebb a képernyő, akkor teljes szélesség és nincs lekerekítés. */
     border-radius: 0;
     margin: 0;
     max-height: 100%;
+    /* Max width-et eltávolítjuk itt, mert a mobil nézet az alapértelmezett. */
+  }
+
+  /* ÚJ MEDIA QUERY: Tabletek és nagyobb képernyők (> 450px) */
+  @media (min-width: 768px) { /* Pl. egy iPad mini szélessége felett */
+    max-width: 900px; /* Megengedjük, hogy szélesebb legyen */
+    height: 90vh; /* Kicsit kisebb magasság */
+    border-radius: 12px; /* Visszaállítjuk a lekerekítést */
+    margin: 3vh auto; /* Függőlegesen középre, kicsit feljebb tolva */
+  }
+
+  @media (min-width: 1024px) { /* Pl. egy nagyobb tablet vagy kis laptop */
+    max-width: 1200px; /* Még szélesebb */
+    height: 95vh;
   }
 }
 
 /* Fejléc stílusa */
 .app-header {
   width: 100%;
-  padding: 15px 20px; /* Kicsit több oldaltávolság */
-  background-color: var(--app-background-color); /* Fehér háttér, ahogy a képen */
-  color: var(--text-color); /* Sötét szöveg */
-  text-align: left; /* Balra igazított szöveg */
-  font-size: 1.4em; /* Kicsit nagyobb cím */
-  font-weight: 600; /* Félkövér */
-  box-shadow: var(--shadow-light); /* Enyhébb árnyék */
+  padding: 15px 40px;
+  background-color: var(--app-background-color);
+  color: var(--text-color);
+  /* text-align: center; // Ezt már nem kell, mert a flexbox kezeli */
+  font-size: 1.8em;
+  font-weight: normal;
+  box-shadow: var(--shadow-light);
   z-index: 10;
-  display: flex; /* Flexbox a cím és esetleges ikonok kezelésére */
-  justify-content: space-between;
+  display: flex;
+  justify-content: space-between; /* VÁLTOZÁS: Széthúzza az elemeket */
   align-items: center;
-  border-bottom: 1px solid var(--border-color); /* Vékony alsó keret */
+  border-bottom: 1px solid var(--border-color);
+  font-family: 'Swanky and Moo Moo', cursive;
 }
 
-/* Fő tartalom stílusa */
+.app-header span {
+  flex-grow: 1; /* Az "AMIRE" cím kitölti a középső részt */
+  text-align: left; /* Visszaállítjuk a szöveg középre igazítását */
+}
+
+/* A main tartalom területének stílusa */
 .app-content {
-  flex-grow: 1;
-  width: 100%;
+  flex-grow: 1; /* Kitölti a maradék helyet */
+  width: 100%; /* Mobil nézeten teljes szélesség */
   padding: 20px;
   overflow-y: auto; /* Görgethető tartalom */
   background-color: var(--app-background-color);
+
+  @media (min-width: 768px) {
+    /* Nagyobb képernyőkön a Sidebar mellett helyezkedik el */
+    width: auto; /* Automatikusan alkalmazkodik a sidebar mellett */
+    padding-left: 20px; /* Kicsit több padding balra */
+  }
 }
 
-/* Lábléc/Navigációs sáv stílusa */
+/* Lábléc / Navigációs sáv */
 .app-footer {
   width: 100%;
-  height: 65px; /* Kicsit magasabb lábléc */
+  height: 65px;
   background-color: var(--app-background-color);
-  border-top: 1px solid var(--border-color); /* Vékony felső keret */
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: var(--shadow-light); /* Enyhe árnyék */
+  box-shadow: var(--shadow-light);
   z-index: 10;
+
+  /* ÚJ MEDIA QUERY: Lábléc eltüntetése nagyobb képernyőkön */
+  @media (min-width: 768px) {
+    display: none; /* Eltüntetjük a láblécet tableten */
+  }
+}
+
+/* ÚJ KONTÉNER AZ EGÉSZ LAYOUTHOZ (HEADER + MAIN + FOOTER) */
+.App-layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  /* Itt alkalmazzuk a fő app konténer korlátozásait */
+  max-width: 450px; 
+  max-height: 900px;
+  margin: 0 auto;
+  background-color: var(--app-background-color);
+  box-shadow: var(--shadow-medium);
+  border-radius: 12px;
+  overflow: hidden;
+
+  @media (max-width: 450px) {
+    border-radius: 0;
+    margin: 0;
+    max-height: 100%;
+  }
+
+  /* NAGYOBB KÉPERNYŐKÖN ALKALMAZZUK A FŐ KONTÉNER STÍLUSÁT */
+  @media (min-width: 768px) {
+    max-width: 900px;
+    height: 90vh;
+    border-radius: 12px;
+    margin: 3vh auto;
+  }
+  @media (min-width: 1024px) {
+    max-width: 1200px;
+    height: 95vh;
+  }
+}
+
+/* AZ ALKALMAZÁS FŐ LAYOUTJA NAGYOBB KÉPERNYŐKÖN */
+.main-content-area {
+  flex-grow: 1; /* Kitölti a rendelkezésre álló helyet */
+  display: flex; /* Flex konténer a Sidebar-nak és a Main-nek */
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Tartalom görgetése */
+
+  @media (max-width: 767px) {
+    /* Mobil nézeten csak a main tartalom */
+    flex-direction: column; 
+  }
 }
 
 .footer-nav-item {
@@ -76,13 +154,41 @@
   transition: color 0.2s ease-in-out; /* Lágyabb átmenet */
 }
 
-.footer-nav-item:hover,
-.footer-nav-item.active {
-  color: var(--primary-color); /* Aktív és hover állapotban a fő szín */
-  font-weight: 600; /* Aktív elem szövege félkövér */
+.footer-nav-item:hover {
+  color: var(--primary-color); /* A hover továbbra is lila marad */
+}
+
+/* ÚJ MEDIA QUERY: Csak mobil méreten alkalmazzuk a fehér színt */
+@media (max-width: 767px) { /* Ahol a lábléc látható */
+  .footer-nav-item.active {
+    color: white; /* Hófehér szín az aktív elemnek */
+    font-weight: 600;
+  }
 }
 
 .footer-nav-item .icon {
   font-size: 1.6em; /* Kicsit nagyobb ikon méret */
   margin-bottom: 4px; /* Kicsit több hely az ikon és szöveg között */
+}
+
+.logout-button {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-light-color);
+  padding: 8px 8px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6em;
+  transition: all 0.2s;
+  /* Ezeket a pozícionálási szabályokat TÖRÖLJÜK, mert a flexbox kezeli */
+  /* position: absolute; */ 
+  /* right: 20px; */
+  flex-shrink: 0; /* Ne zsugorodjon össze */
+}
+.logout-button:hover {
+  background-color: #555;
+  color: white;
 }

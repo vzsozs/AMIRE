@@ -1,38 +1,64 @@
 // src/pages/JobDetailPage.jsx
 import React, { useState, useContext } from 'react';
-import { TeamContext } from '../context/TeamContext'; // FONTOS: TeamContext importálása
 import { useParams, useNavigate } from 'react-router-dom';
+import { TeamContext } from '../context/TeamContext';
+import { JobContext } from '../context/JobContext';
 import { toYYYYMMDD } from '../utils/date';
-import { FaArrowLeft, FaTrash, FaUserPlus, FaTimesCircle, FaPencilAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa'; 
+import { FaArrowLeft, FaTrash, FaUserPlus, FaTimesCircle, FaPencilAlt, FaChevronLeft, FaChevronRight, FaCheckSquare, FaRegSquare, FaTrashAlt, FaChevronDown, FaChevronUp, FaPlus } from 'react-icons/fa'; // FaPlus is
 import Modal from '../components/Modal';
 import EditJobForm from '../components/EditJobForm';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './JobDetailPage.css';
 import './JobScheduleCalendar.css';
+import { useToast } from '../context/useToast';
 
-// A függvény megkapja a szükséges propokat az App-ból
-function JobDetailPage({ jobs, onDeleteJob, onUpdateJob, onAssignTeamMember, onUnassignTeamMember, onToggleJobSchedule }) {
+function JobDetailPage() {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  // FONTOS: A 'team' listát a Context-ből olvassuk ki
+  const [newTodoText, setNewTodoText] = useState('');
+  const [showCompletedTodos, setShowCompletedTodos] = useState(false);
+  
+  // FONTOS: Mindig a Context-ből olvasunk ki
   const { team } = useContext(TeamContext);
+  const { 
+    jobs, deleteJob, assignTeamMember, unassignTeamMember, 
+    toggleJobSchedule, addTodoItem, toggleTodoItem, deleteTodoItem 
+  } = useContext(JobContext);
+  
+  const { showToast } = useToast();
 
   const currentJobId = Number(jobId);
-  const job = jobs.find(j => j.id === currentJobId);
 
   const [calendarKey, setCalendarKey] = useState(Date.now()); 
   const [activeStartDate, setActiveStartDate] = useState(new Date());
 
-  // VÉGLEGES MEGOLDÁS: Ellenőrizzük, hogy MINDEN szükséges adat megérkezett-e
-  if (!job || !team) { // A 'team' már létezik a Context miatt
+  // --- HIBAKEZELÉS: Ez a VÉGLEGES Guard Clause ---
+  // Először ellenőrizzük, hogy a Context-ből megkaptuk-e az összes listát
+  if (!Array.isArray(jobs) || !Array.isArray(team) || jobs.length === 0) { 
+    console.log("JobDetailPage: Adatok betöltése vagy üres lista. jobs:", jobs, "team:", team);
     return (
       <div className="job-detail-page">
         <h2>Adatok betöltése...</h2>
-        <p>Ha ez az üzenet nem tűnik el, a keresett munka valószínűleg nem létezik.</p>
+        <p>Ha ez az üzenet nem tűnik el, az adatok még nem érkeztek meg, vagy hibásak.</p>
+        <button onClick={() => navigate('/tasks')} className="back-button" style={{ marginTop: '20px' }}>
+          <FaArrowLeft /> 
+        </button>
+      </div>
+    );
+  }
+
+  // --- Ha az adatok megvannak, megkeressük a konkrét munkát ---
+  const job = jobs.find(j => j.id === currentJobId);
+
+  if (!job) {
+    console.log("JobDetailPage: A munka nem található az aktuális listában. jobId:", currentJobId);
+    return (
+      <div className="job-detail-page">
+        <h2>Hiba</h2>
+        <p>A keresett munka nem található.</p>
         <button onClick={() => navigate('/tasks')} className="back-button" style={{ marginTop: '20px' }}>
           <FaArrowLeft /> 
         </button>
@@ -40,42 +66,42 @@ function JobDetailPage({ jobs, onDeleteJob, onUpdateJob, onAssignTeamMember, onU
     );
   }
   
-  // A kód többi része innen már csak akkor fut le, ha 'job' és 'team' is biztosan létezik.
+  // === INNENTŐL KEZDVE BIZTOSAK VAGYUNK BENNE, HOGY A 'job' ÉS 'team' LÉTEZIK ÉS ÉRVÉNYES ===
+  // Ezen a ponton már nem kell optional chaining a job.assignedTeam-nél, 
+  // mert a job objektumról tudjuk, hogy létezik és a struktúrája megfelelő.
 
   const handleDelete = () => {
     const isConfirmed = window.confirm(`Biztosan törölni szeretné a(z) "${job.title}" nevű munkát?`);
     if (isConfirmed) {
-      onDeleteJob(job.id);
+      deleteJob(job.id); 
       navigate('/tasks');
+      showToast('Munka sikeresen törölve!', 'success');
     }
   };
   
-  const assignedMembers = team.filter(member => job.assignedTeam.includes(member.id));
-  const availableMembers = team.filter(member => !job.assignedTeam.includes(member.id));
+  const assignedMembers = team.filter(member => job.assignedTeam?.includes(member.id));
+  const availableMembers = team.filter(member => !job.assignedTeam?.includes(member.id));
 
   const handleAssignClick = (memberId) => {
-    onAssignTeamMember(currentJobId, memberId);
+    assignTeamMember(currentJobId, memberId);
+    showToast('Csapattag felvéve!', 'success');
   };
 
   const handleUnassignClick = (memberId) => {
-    onUnassignTeamMember(currentJobId, memberId);
-  };
-
-  const handleUpdateSubmit = (updatedData) => {
-    onUpdateJob(updatedData);
-    setIsEditModalOpen(false);
+    unassignTeamMember(currentJobId, memberId);
+    showToast('Csapattag eltávolítva!', 'success');
   };
 
   const handleJobDayClick = (date) => {
     const dateString = toYYYYMMDD(date);
-    onToggleJobSchedule(currentJobId, dateString);
+    toggleJobSchedule(currentJobId, dateString);
     setCalendarKey(Date.now());
   };
 
   const getJobTileClassName = ({ date, view }) => {
     if (view === 'month') {
       const dateString = toYYYYMMDD(date);
-      if (job?.schedule?.includes(dateString)) {
+      if (job.schedule?.includes(dateString)) {
         return 'scheduled-day';
       }
     }
@@ -100,9 +126,32 @@ function JobDetailPage({ jobs, onDeleteJob, onUpdateJob, onAssignTeamMember, onU
     setCalendarKey(Date.now());
   };
 
+  const handleAddTodoClick = () => {
+    if (newTodoText.trim() === '') return;
+    addTodoItem(currentJobId, newTodoText);
+    setNewTodoText('');
+    showToast('Teendő hozzáadva!', 'success');
+  };
+
+  const handleToggleClick = (todoId) => {
+    toggleTodoItem(currentJobId, todoId);
+    showToast('Teendő állapota frissítve!', 'info');
+  };
+
+  const handleDeleteClick = (todoId) => {
+    const isConfirmed = window.confirm('Biztosan törölni szeretné ezt a teendőt?');
+    if (isConfirmed) {
+      deleteTodoItem(currentJobId, todoId);
+      showToast('Teendő törölve!', 'success');
+    }
+  };
+
+  const uncompletedTodos = (job.todoList || []).filter(item => !item.completed);
+  const completedTodos = (job.todoList || []).filter(item => item.completed);
+
 
  return (
-    <> {/* Fontos: A React fragment, mert több gyökérelem van */}
+    <>
       <div className="job-detail-page">
         <div className="detail-header">
           <button onClick={() => navigate('/tasks')} className="back-button icon-button">
@@ -127,33 +176,67 @@ function JobDetailPage({ jobs, onDeleteJob, onUpdateJob, onAssignTeamMember, onU
         </div>
 
         <div className="detail-section">
-          <h3>Határidő</h3>
-          <p>{job.deadline}</p>
-        </div>
-
-        <div className="detail-section">
-          <div className="section-header">
-            <h3>Hozzárendelt csapattagok</h3>
-            <button onClick={() => setIsAssignModalOpen(true)} className="assign-button">
-              <FaUserPlus /> Hozzárendelés
-            </button>
-          </div>
-          <div className="assigned-members-list">
-            {assignedMembers.length > 0 ? (
-              assignedMembers.map(member => (
-                <div key={member.id} className="assigned-member-item" style={{ borderLeftColor: member.color }}>
-                  <span className="member-name">{member.name}</span>
-                  <button onClick={() => handleUnassignClick(member.id)} className="unassign-button">
-                    <FaTimesCircle />
+          <h3>Teendők</h3>
+          <div className="todo-list-container">
+            {uncompletedTodos.length > 0 ? (
+              uncompletedTodos.map(item => (
+                <div key={item.id} className="todo-item">
+                  <button onClick={() => handleToggleClick(item.id)} className="todo-checkbox">
+                    <FaRegSquare />
+                  </button>
+                  <span className="todo-text">{item.text}</span>
+                  <button onClick={() => handleDeleteClick(item.id)} className="todo-delete-button">
+                    <FaTrashAlt />
                   </button>
                 </div>
               ))
             ) : (
-              <p>Még nincsenek csapattagok hozzárendelve ehhez a munkához.</p>
+              <p className="no-data-message">Nincsenek még elvégzetlen teendők.</p>
             )}
+
+            {completedTodos.length > 0 && (
+              <div className="completed-todos-section">
+                <button 
+                  onClick={() => setShowCompletedTodos(!showCompletedTodos)} 
+                  className="toggle-completed-button"
+                >
+                  {showCompletedTodos ? <FaChevronUp /> : <FaChevronDown />}
+                  Elvégzett teendők ({completedTodos.length})
+                </button>
+                {showCompletedTodos && (
+                  <div className="completed-list">
+                    {completedTodos.map(item => (
+                      <div key={item.id} className="todo-item completed">
+                        <button onClick={() => handleToggleClick(item.id)} className="todo-checkbox">
+                          <FaCheckSquare />
+                        </button>
+                        <span className="todo-text">{item.text}</span>
+                        <button onClick={() => handleDeleteClick(item.id)} className="todo-delete-button">
+                          <FaTrashAlt />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="add-todo-form">
+              <input 
+                type="text" 
+                className="add-todo-input"
+                placeholder="Új teendő hozzáadása..."
+                value={newTodoText}
+                onChange={(e) => setNewTodoText(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAddTodoClick()}
+              />
+              <button onClick={handleAddTodoClick} className="add-todo-button">
+                <FaPlus />
+              </button>
+            </div>
           </div>
         </div>
-        
+
         <div className="detail-section">
           <h3>Munka ütemezése</h3>
           <div className="calendar-wrapper-dark">
@@ -178,7 +261,37 @@ function JobDetailPage({ jobs, onDeleteJob, onUpdateJob, onAssignTeamMember, onU
           </div>
         </div>
 
+
+        <div className="detail-section">
+          <div className="section-header">
+            <h3>Akik csinálják</h3>
+            <button onClick={() => setIsAssignModalOpen(true)} className="assign-button">
+              <FaUserPlus /> Hozzárendelés
+            </button>
+          </div>
+          <div className="assigned-members-list">
+            {assignedMembers.length > 0 ? (
+              assignedMembers.map(member => (
+                <div key={member.id} className="assigned-member-item" style={{ borderLeftColor: member.color }}>
+                  <span className="member-name">{member.name}</span>
+                  <button onClick={() => handleUnassignClick(member.id)} className="unassign-button">
+                    <FaTimesCircle />
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className="no-data-message">Még nincsenek csapattagok hozzárendelve ehhez a munkához.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="detail-section">
+          <h3>Határidő</h3>
+          <p>{job.deadline}</p>
+        </div>
+
       </div> {/* Itt záródik a fő div */}
+
 
       <Modal isOpen={isAssignModalOpen} onClose={() => setIsAssignModalOpen(false)}>
         <div className="assign-modal-content">
@@ -193,7 +306,7 @@ function JobDetailPage({ jobs, onDeleteJob, onUpdateJob, onAssignTeamMember, onU
                 </div>
               ))
             ) : (
-              <p>Nincs több hozzárendelhető csapattag.</p>
+              <p className="no-data-message">Nincs több hozzárendelhető csapattag.</p>
             )}
           </div>
         </div>
@@ -202,7 +315,6 @@ function JobDetailPage({ jobs, onDeleteJob, onUpdateJob, onAssignTeamMember, onU
         <EditJobForm 
           jobToEdit={job}
           onCancel={() => setIsEditModalOpen(false)}
-          onUpdateJob={handleUpdateSubmit}
         />
       </Modal>
     </>

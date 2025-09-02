@@ -94,11 +94,12 @@
   font-weight: bold;
 }
 /* Napi jegyzetek lista */
+/* Napi jegyzetek/Teendők lista - most már Linkeket tartalmaz */
 .notes-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; - Ezt már nem kell ide, ha nincs alatta input */
 }
 
 .note-item {
@@ -110,22 +111,32 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
+  text-decoration: none; /* FONTOS: A Link elem miatt */
+  color: #E0E0E0; /* FONTOS: A Link elem miatt */
+  border-left: 5px solid transparent; /* Később a jobColor jön ide */
+}
+
+.note-item:hover {
+  background-color: #555;
 }
 
 .note-item.completed {
+  /* Ez a class már nem fog hasznos lenni itt, mert csak uncompleted-et mutatunk */
   background-color: #333;
   opacity: 0.6;
 }
 
 .note-item .note-text {
-  transition: text-decoration 0.2s;
+  /* transition: text-decoration 0.2s; - már nem kell */
+  flex-grow: 1; /* Kitölti a helyet */
 }
 
-.note-item.completed .note-text {
-  text-decoration: line-through;
-  color: var(--text-light-color);
+/* Az egyedi pipa/jelző ikon stílusa */
+.note-item .fa-check-circle { /* A Font Awesome ikon osztályneve */
+    margin-left: 10px;
+    flex-shrink: 0;
 }
-
+/*
 .checkmark-box {
   width: 20px;
   height: 20px;
@@ -138,9 +149,9 @@
 .note-item.completed .checkmark-box {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
-}
+}*/
 /* A pipa ikon (pseudo-element) */
-.note-item.completed .checkmark-box::after {
+/*.note-item.completed .checkmark-box::after {
   content: '✓';
   color: white;
   position: absolute;
@@ -148,11 +159,11 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-weight: bold;
-}
+}*/
 
 
 /* Új jegyzet űrlap */
-.add-note-form {
+/*.add-note-form {
   display: flex;
   gap: 10px;
   margin-top: 15px;
@@ -178,17 +189,18 @@
   background-color: var(--primary-color);
   border: none;
   border-radius: 6px;
-  color: white;
+  color: white; 
   font-size: 1.2em;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  padding: 0; 
 }
 .add-note-button:hover {
   background-color: var(--primary-light);
-}
+}*/
 /* Stílus kifejezetten a jegyzetek kártyájához */
 .dashboard-card.notes-card {
-  background-color: #2e2d27; /* Enyhén sárgás-olívás sötétszürke */
+  background-color: #302e26; /* Enyhén sárgás-olívás sötétszürke */
 }
