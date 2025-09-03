@@ -19,26 +19,29 @@ export const TeamProvider = ({ children }) => {
   };
 
 
-  // Adatok lekérése a backendről a komponens betöltődésekor
   useEffect(() => {
     const fetchTeam = async () => {
       const token = localStorage.getItem('amire_auth_token');
-      if (!token) {
-        showToast("Kérem, jelentkezzen be!", "info"); // Opcionális üzenet, ha nincs token
-        return; 
-      }
+      if (!token) return;
+
       try {
         const response = await fetch(`${API_BASE_URL}/team`, { headers: getAuthHeaders() });
+        if (response.status === 401 || response.status === 403) {
+          // showToast("Kérem, jelentkezzen be újra!", "error");
+          localStorage.removeItem('amire_auth_token');
+          return;
+        }
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setTeam(data);
+        // showToast("Csapat sikeresen betöltve!", "success");
       } catch (error) {
         console.error("Hiba a csapatadatok lekérésekor:", error);
-        showToast("Hiba a csapatadatok betöltésekor!", "error");
+        // showToast("Hiba a csapatadatok betöltésekor!", "error");
       }
     };
     fetchTeam();
-  }, [showToast]);
+  }, []); // FONTOS: showToast eltávolítása a függőségi listából
 
   // --- CSAPAT KEZELÉSE ---
 

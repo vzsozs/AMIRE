@@ -19,24 +19,33 @@ export const JobProvider = ({ children }) => {
     };
   };
 
-  useEffect(() => {
+   useEffect(() => {
     const fetchJobs = async () => {
-      // Csak akkor kérjük le az adatokat, ha van token
       const token = localStorage.getItem('amire_auth_token');
+      // FONTOS: Itt NEM szabad showToast-ot hívni, ha csak nincs token
       if (!token) return; 
 
       try {
         const response = await fetch(`${API_BASE_URL}/jobs`, { headers: getAuthHeaders() });
+        if (response.status === 401 || response.status === 403) { // Autentikációs hiba
+          // showToast("Kérem, jelentkezzen be újra!", "error"); // Opcionális
+          localStorage.removeItem('amire_auth_token'); // Töröljük a rossz tokent
+          // Itt egy globális authentikációs állapotot kellene frissíteni, ami visszadob a login oldalra.
+          // Mivel nincs ilyen globális AuthContext-ünk, most csak a tokent töröljük.
+          return;
+        }
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setJobs(data);
+        // showToast("Munkák sikeresen betöltve!", "success"); // Opcionális toast
       } catch (error) {
         console.error("Hiba a munkák adatainak lekérésekor:", error);
-        showToast("Hiba a munkák betöltésekor!", "error");
+        // showToast("Hiba a munkák betöltésekor!", "error"); // Ezt is kikommentelem
       }
     };
     fetchJobs();
-  }, [showToast]);
+  }, []); // FONTOS: showToast eltávolítása a függőségi listából, hogy ne okozzon végtelen ciklust
+
 
 
   // --- MUNKÁK KEZELÉSE ---
