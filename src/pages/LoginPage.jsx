@@ -10,6 +10,8 @@ function LoginPage({ onLogin }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(''); // Töröljük az előző hibát
+     // FONTOS HIBAKERESÉS: LOGOLJUK KI AZ ELKÜLDÖTT ADATOKAT!
+    console.log(`Frontend küldi: Felhasználónév: "${username}", Jelszó: "${password}"`);
     const success = await onLogin(username, password);
     if (!success) {
       setError('Hibás felhasználónév vagy jelszó!');
