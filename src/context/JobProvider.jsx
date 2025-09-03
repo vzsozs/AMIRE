@@ -4,7 +4,7 @@ import { JobContext } from './JobContext';
 import moment from 'moment';
 import { useToast } from './useToast'; // Toast használatához
 
-const API_BASE_URL = 'http://localhost:3001/api'; // Backend API alap URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Ezt használod
 
 export const JobProvider = ({ children }) => {
   const [jobs, setJobs] = useState([]);
