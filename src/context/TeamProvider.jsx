@@ -9,11 +9,26 @@ export const TeamProvider = ({ children }) => {
   const [team, setTeam] = useState([]);
   const { showToast } = useToast();
 
+    // Segédfüggvény a token lekéréséhez
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('amire_auth_token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    };
+  };
+
+
   // Adatok lekérése a backendről a komponens betöltődésekor
   useEffect(() => {
     const fetchTeam = async () => {
+      const token = localStorage.getItem('amire_auth_token');
+      if (!token) {
+        showToast("Kérem, jelentkezzen be!", "info"); // Opcionális üzenet, ha nincs token
+        return; 
+      }
       try {
-        const response = await fetch(`${API_BASE_URL}/team`);
+        const response = await fetch(`${API_BASE_URL}/team`, { headers: getAuthHeaders() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setTeam(data);
@@ -31,7 +46,7 @@ export const TeamProvider = ({ children }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/team`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Token küldése
         body: JSON.stringify(newMemberData),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -48,6 +63,7 @@ export const TeamProvider = ({ children }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/team/${memberIdToDelete}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(), // Token küldése
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       setTeam(prevTeam => prevTeam.filter(member => member.id !== memberIdToDelete));
@@ -62,7 +78,7 @@ export const TeamProvider = ({ children }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/team/${updatedMemberData.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Token küldése
         body: JSON.stringify(updatedMemberData),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -87,7 +103,7 @@ export const TeamProvider = ({ children }) => {
 
       const response = await fetch(`${API_BASE_URL}/team/${memberId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Token küldése
         body: JSON.stringify(memberToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

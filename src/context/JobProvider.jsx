@@ -2,19 +2,31 @@
 import React, { useState, useEffect } from 'react';
 import { JobContext } from './JobContext';
 import moment from 'moment';
-import { useToast } from './useToast'; // Toast használatához
+import { useToast } from './useToast';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Ezt használod
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const JobProvider = ({ children }) => {
   const [jobs, setJobs] = useState([]);
-  const { showToast } = useToast(); // Toast üzenetekhez
+  const { showToast } = useToast();
 
-  // Adatok lekérése a backendről a komponens betöltődésekor
+  // Segédfüggvény a token lekéréséhez
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('amire_auth_token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    };
+  };
+
   useEffect(() => {
     const fetchJobs = async () => {
+      // Csak akkor kérjük le az adatokat, ha van token
+      const token = localStorage.getItem('amire_auth_token');
+      if (!token) return; 
+
       try {
-        const response = await fetch(`${API_BASE_URL}/jobs`);
+        const response = await fetch(`${API_BASE_URL}/jobs`, { headers: getAuthHeaders() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setJobs(data);
@@ -24,7 +36,8 @@ export const JobProvider = ({ children }) => {
       }
     };
     fetchJobs();
-  }, [showToast]); // showToast a függőségi listában, hogy az is elérhető legyen
+  }, [showToast]);
+
 
   // --- MUNKÁK KEZELÉSE ---
 
@@ -32,7 +45,7 @@ export const JobProvider = ({ children }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/jobs`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Token küldése
         body: JSON.stringify(newJobData),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -49,6 +62,7 @@ export const JobProvider = ({ children }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/jobs/${jobIdToDelete}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(), // Token küldése
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       setJobs(prevJobs => prevJobs.filter(job => job.id !== jobIdToDelete));
@@ -69,7 +83,7 @@ export const JobProvider = ({ children }) => {
       
       const response = await fetch(`${API_BASE_URL}/jobs/${jobToSend.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Token küldése
         body: JSON.stringify(jobToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -92,7 +106,7 @@ export const JobProvider = ({ children }) => {
 
       const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Token küldése
         body: JSON.stringify(jobToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -114,7 +128,7 @@ export const JobProvider = ({ children }) => {
 
       const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Token küldése
         body: JSON.stringify(jobToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -139,7 +153,7 @@ export const JobProvider = ({ children }) => {
 
       const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(jobToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -162,7 +176,7 @@ export const JobProvider = ({ children }) => {
 
       const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(jobToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -186,7 +200,7 @@ export const JobProvider = ({ children }) => {
 
       const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(jobToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -208,7 +222,7 @@ export const JobProvider = ({ children }) => {
 
       const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(jobToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
