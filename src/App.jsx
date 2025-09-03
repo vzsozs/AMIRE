@@ -106,7 +106,7 @@ function App() {
     <ToastProvider>
       <TeamProvider>
         <JobProvider>
-          <Router>
+          <Router basename="/AMIRE">
             <div className="App-layout-wrapper">
               {isAuthenticated ? ( // Ha be van jelentkezve, mutassuk az alkalmazást
                 <>
