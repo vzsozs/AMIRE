@@ -160,8 +160,8 @@ function JobDetailPage() {
     }
   };
 
-  const uncompletedTodos = (job.todoList || []).filter(item => !item.completed);
-  const completedTodos = (job.todoList || []).filter(item => item.completed);
+  const uncompletedTodos = (job.todolist || []).filter(item => !item.completed);
+  const completedTodos = (job.todolist || []).filter(item => item.completed);
 
 
  return (
