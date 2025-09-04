@@ -1,14 +1,13 @@
 // src/pages/LoginPage.jsx
-import React, { useState } from 'react'; // 'useEffect' már nem kell itt
+import React, { useState } from 'react';
+import { useToast } from '../context/useToast'; // FONTOS: Toast hook importálása
 import './LoginPage.css';
 
-// Az API_BASE_URL-t már nem itt definiáljuk, hanem az App.jsx kezeli.
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-function LoginPage({ onLogin, appVersion }) { // Az appVersion propként érkezik
+function LoginPage({ onLogin, appVersion }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { showToast } = useToast(); // Itt kell használni
   // Az appVersion és a setAppVersion már nem itt vannak definiálva
   // const [appVersion, setAppVersion] = useState(''); 
 
@@ -22,12 +21,14 @@ function LoginPage({ onLogin, appVersion }) { // Az appVersion propként érkezi
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
-    const success = await onLogin(username, password);
+    const success = await onLogin(username, password); // onLogin nem küld már toast-ot
     if (!success) {
       setError('Hibás felhasználónév vagy jelszó!');
+      showToast('Hibás felhasználónév vagy jelszó!', 'error'); // Itt jelenítjük meg a toast-ot
+    } else {
+      showToast('Sikeres bejelentkezés!', 'success'); // Vagy itt, ha sikeres
     }
   };
-
   return (
     <div className="login-page-container">
       <div className="login-box">

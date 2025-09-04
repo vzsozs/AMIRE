@@ -16,16 +16,16 @@ import TeamMemberDetailPage from './pages/TeamMemberDetailPage';
 import JobDetailPage from './pages/JobDetailPage';
 import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage';
-import { useToast } from './context/useToast';
 
 // Az API alap URL-je környezeti változóból
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [dailyNotes, setDailyNotes] = useState({}); // Napi jegyzetek állapota (ha megtartjuk)
-  const [appVersion, setAppVersion] = useState(''); // Alkalmazás verziószáma
-  const { showToast } = useToast(); // Toast üzenetekhez
+  const [dailyNotes, setDailyNotes] = useState({});
+  const [appVersion, setAppVersion] = useState('');
+  // FONTOS: A useToast hívást KISZEDTÜK INNEN!
+  // const { showToast } = useToast(); 
 
   // Ellenőrizzük a tokent az alkalmazás indulásakor
   useEffect(() => {
@@ -54,14 +54,17 @@ function App() {
     } else {
         setAppVersion('Fejlesztés alatt');
     }
-  }, []); // FONTOS: Most már üres a függőségi tömb!
+  }, []);
 
+  // FONTOS: A handleLogin, handleLogout, handleAddNote, handleToggleNote függvények
+  // MOST MÁR context nélkül futnak itt.
+  // Azok a komponensek, amik ezeket meghívják, majd a saját useToast-jukat használják.
 
   // Bejelentkezés kezelése
   const handleLogin = async (username, password) => {
     try {
       if (!API_BASE_URL) {
-        showToast("Hiba: Az API URL nincs beállítva!", "error");
+        // showToast("Hiba: Az API URL nincs beállítva!", "error"); // showToast itt már nem elérhető!
         return false;
       }
       const response = await fetch(`${API_BASE_URL}/login`, {
@@ -71,16 +74,17 @@ function App() {
       });
       if (!response.ok) {
         const errorData = await response.json();
+        // showToast(errorData.message || 'Hibás felhasználónév vagy jelszó', "error"); // showToast itt már nem elérhető!
         throw new Error(errorData.message || 'Hibás felhasználónév vagy jelszó');
       }
       const data = await response.json();
       localStorage.setItem('amire_auth_token', data.token);
       setIsAuthenticated(true);
-      showToast("Sikeres bejelentkezés!", "success");
+      // showToast("Sikeres bejelentkezés!", "success"); // showToast itt már nem elérhető!
       return true;
     } catch (error) {
       console.error("Bejelentkezési hiba:", error);
-      showToast(error.message || "Ismeretlen hiba a bejelentkezés során.", "error");
+      // showToast(error.message || "Ismeretlen hiba a bejelentkezés során.", "error"); // showToast itt már nem elérhető!
       return false;
     }
   };
@@ -89,7 +93,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('amire_auth_token');
     setIsAuthenticated(false);
-    showToast("Sikeres kijelentkezés!", "info");
+    // showToast("Sikeres kijelentkezés!", "info"); // showToast itt már nem elérhető!
   };
 
   // Napi jegyzetek kezelése (Ha ezt a funkciót megtartjuk a HomePage-en)
@@ -100,7 +104,7 @@ function App() {
       const notesForDay = prevNotes[todayString] || [];
       return { ...prevNotes, [todayString]: [...notesForDay, newNote] };
     });
-    showToast("Jegyzet hozzáadva!", "success");
+    // showToast("Jegyzet hozzáadva!", "success"); // showToast itt már nem elérhető!
   };
 
   const handleToggleNote = (noteId) => {
@@ -110,20 +114,20 @@ function App() {
       const updatedNotes = notesForDay.map(note => note.id === noteId ? { ...note, completed: !note.completed } : note);
       return { ...prevNotes, [todayString]: updatedNotes };
     });
-    showToast("Jegyzet frissítve!", "info");
+    // showToast("Jegyzet frissítve!", "info"); // showToast itt már nem elérhető!
   };
 
 
   return (
-    // FONTOS: A ToastProvider a legkülső!
-    <ToastProvider> 
+    <ToastProvider>
       <TeamProvider>
         <JobProvider>
           <Router basename="/">
             <div className="App-layout-wrapper">
               {isAuthenticated ? ( // Ha be van jelentkezve, mutassuk az alkalmazást
                 <>
-                  <Header onLogout={handleLogout} />
+                  {/* onLogout={handleLogout} - Ez mostantól a Header saját 'onLogout' logikáját használja */}
+                  <Header onLogout={handleLogout} /> 
                   <div className="main-content-area">
                     <Sidebar />
                     <main className="app-content">
@@ -140,13 +144,14 @@ function App() {
                   <Footer />
                 </>
               ) : ( // Ha nincs bejelentkezve, mutassuk a login oldalt
-                <LoginPage onLogin={handleLogin} appVersion={appVersion} />
+                // A LoginPage már a saját showToast-ját használja
+                <LoginPage onLogin={handleLogin} appVersion={appVersion} /> 
               )}
             </div>
           </Router>
         </JobProvider>
       </TeamProvider>
-      <Toast /> {/* A Toast komponenst a ToastProvider alá, de a Router-en KÍVÜLRE kell helyezni */}
+      <Toast /> 
     </ToastProvider>
   );
 }

@@ -1,18 +1,23 @@
 // src/components/Header.jsx
 import React from 'react';
 import { FaSignOutAlt } from 'react-icons/fa';
+import { useToast } from '../context/useToast'; // FONTOS: Toast hook importálása
 
 function Header({ onLogout }) {
-  console.log("Header renderelt. onLogout prop:", onLogout); // Ellenőrizzük a propot
+  const { showToast } = useToast(); // Itt kell használni
+
+  const handleLogoutClick = () => {
+    onLogout();
+    showToast('Sikeres kijelentkezés!', 'info'); // Itt jelenítjük meg a toast-ot
+  };
 
   return (
     <header className="app-header">
       <span>AMIRE</span>
-      <button onClick={onLogout} className="logout-button">
-        <FaSignOutAlt />
+      <button onClick={handleLogoutClick} className="logout-button"> {/* Módosított onClick */}
+        <FaSignOutAlt /> Kijelentkezés
       </button>
     </header>
   );
 }
-
 export default Header;
