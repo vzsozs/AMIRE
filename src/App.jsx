@@ -115,7 +115,8 @@ function App() {
 
 
   return (
-    <ToastProvider>
+    // FONTOS: A ToastProvider a legkülső!
+    <ToastProvider> 
       <TeamProvider>
         <JobProvider>
           <Router basename="/">
@@ -145,7 +146,7 @@ function App() {
           </Router>
         </JobProvider>
       </TeamProvider>
-      <Toast />
+      <Toast /> {/* A Toast komponenst a ToastProvider alá, de a Router-en KÍVÜLRE kell helyezni */}
     </ToastProvider>
   );
 }
