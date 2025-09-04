@@ -57,12 +57,13 @@ export const JobProvider = ({ children }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/jobs`, {
         method: 'POST',
-        headers: getAuthHeaders(), // Token küldése
-        body: JSON.stringify(newJobData),
+        headers: getAuthHeaders(),
+        // A 'newJobData' már nem tartalmaz ID-t, csak a form adatait
+        body: JSON.stringify(newJobData), 
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const newJob = await response.json();
-      setJobs(prevJobs => [...prevJobs, newJob]);
+      const newJob = await response.json(); // A backend adja vissza a teljes objektumot, ID-vel
+      setJobs(prevJobs => [...prevJobs, newJob]); // Ezt adjuk hozzá az állapothoz
       showToast("Munka sikeresen hozzáadva!", "success");
     } catch (error) {
       console.error("Hiba új munka hozzáadása során:", error);

@@ -52,11 +52,12 @@ export const TeamProvider = ({ children }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/team`, {
         method: 'POST',
-        headers: getAuthHeaders(), // Token küldése
-        body: JSON.stringify(newMemberData),
+        headers: getAuthHeaders(),
+        // A 'newMemberData' már nem tartalmaz ID-t
+        body: JSON.stringify(newMemberData), 
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const newMember = await response.json();
+      const newMember = await response.json(); // A backend adja vissza a teljes objektumot, ID-vel
       setTeam(prevTeam => [...prevTeam, newMember]);
       showToast("Csapattag sikeresen hozzáadva!", "success");
     } catch (error) {
