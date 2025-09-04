@@ -84,13 +84,14 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: var(--shadow-light);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); /* Enyhe árnyék felfelé */
   z-index: 10;
-
-  /* ÚJ MEDIA QUERY: Lábléc eltüntetése nagyobb képernyőkön */
-  @media (min-width: 768px) {
-    display: none; /* Eltüntetjük a láblécet tableten */
+  /* FONTOS: Alapértelmezetten display: flex, és csak nagyobb képernyőn tűnik el */
+  
+  @media (min-width: 768px) { /* Tablet nézet felett eltűnik */
+    display: none; 
   }
+  /* Nincs @media (max-width) szabály, mert alapból mobilon látható */
 }
 
 /* ÚJ KONTÉNER AZ EGÉSZ LAYOUTHOZ (HEADER + MAIN + FOOTER) */

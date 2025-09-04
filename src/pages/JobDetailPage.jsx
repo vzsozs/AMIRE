@@ -42,9 +42,9 @@ function JobDetailPage() {
     return (
       <div className="job-detail-page">
         <h2>Adatok betöltése...</h2>
-        <p>Ha ez az üzenet nem tűnik el, az adatok még nem érkeztek meg, vagy hibásak.</p>
+        <p>Kérem várjon, amíg az adatok betöltődnek. Ha ez az üzenet nem tűnik el, a szerverről nem érkezett adat, vagy a munka nem létezik.</p>
         <button onClick={() => navigate('/tasks')} className="back-button" style={{ marginTop: '20px' }}>
-          <FaArrowLeft /> 
+          <FaArrowLeft />
         </button>
       </div>
     );
@@ -57,10 +57,10 @@ function JobDetailPage() {
     console.log("JobDetailPage: A munka nem található az aktuális listában. jobId:", currentJobId);
     return (
       <div className="job-detail-page">
-        <h2>Hiba</h2>
-        <p>A keresett munka nem található.</p>
+        <h2>Hiba: A munka nem található</h2>
+        <p>A keresett munka azonosítója hibás, vagy a munka már nem létezik. Kérem, térjen vissza a listához.</p>
         <button onClick={() => navigate('/tasks')} className="back-button" style={{ marginTop: '20px' }}>
-          <FaArrowLeft /> 
+          <FaArrowLeft /> Vissza a listához
         </button>
       </div>
     );
