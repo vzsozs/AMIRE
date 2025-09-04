@@ -7,6 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Ezt használod
 
 export const TeamProvider = ({ children }) => {
   const [team, setTeam] = useState([]);
+  const [isLoadingTeam, setIsLoadingTeam] = useState(true); // ÚJ: Betöltési állapot
   const { showToast } = useToast();
 
     // Segédfüggvény a token lekéréséhez
@@ -21,6 +22,7 @@ export const TeamProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchTeam = async () => {
+      setIsLoadingTeam(true); // FONTOS: Indítjuk a betöltést
       const token = localStorage.getItem('amire_auth_token');
       if (!token) return;
 
@@ -34,6 +36,7 @@ export const TeamProvider = ({ children }) => {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setTeam(data);
+        setIsLoadingTeam(false); // FONTOS: Befejezzük a betöltést
         // showToast("Csapat sikeresen betöltve!", "success");
       } catch (error) {
         console.error("Hiba a csapatadatok lekérésekor:", error);
@@ -121,6 +124,7 @@ export const TeamProvider = ({ children }) => {
   
   const value = {
     team,
+    isLoadingTeam, // ÚJ: Átadjuk a betöltési állapotot
     addTeamMember,
     deleteTeamMember,
     updateTeamMember,

@@ -17,12 +17,20 @@ function TeamMemberDetailPage() {
   const navigate = useNavigate();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
-  const { team, deleteTeamMember, updateTeamMember, toggleAvailability } = useContext(TeamContext);
+  const { team, isLoadingTeam, isLoadingJobs, deleteTeamMember, updateTeamMember, toggleAvailability } = useContext(TeamContext);
 
   const { showToast } = useToast(); // ITT KEZDJÜK HASZNÁLNI
 
   const [key, setKey] = useState(Date.now());
   const [activeStartDate, setActiveStartDate] = useState(new Date());
+  
+  if (isLoadingTeam || isLoadingJobs) { // Várjuk meg mindkettőt, ha kell
+    return (
+      <div className="job-detail-page">
+        <h2>Adatok betöltése...</h2>
+      </div>
+    );
+  }
 
   const person = team.find(p => p.id == memberId);
 

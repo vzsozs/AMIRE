@@ -8,6 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const JobProvider = ({ children }) => {
   const [jobs, setJobs] = useState([]);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(true); // ÚJ: Betöltési állapot
   const { showToast } = useToast();
 
   // Segédfüggvény a token lekéréséhez
@@ -21,6 +22,7 @@ export const JobProvider = ({ children }) => {
 
    useEffect(() => {
     const fetchJobs = async () => {
+      setIsLoadingJobs(true); // FONTOS: Indítjuk a betöltést
       const token = localStorage.getItem('amire_auth_token');
       // FONTOS: Itt NEM szabad showToast-ot hívni, ha csak nincs token
       if (!token) return; 
@@ -37,6 +39,7 @@ export const JobProvider = ({ children }) => {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setJobs(data);
+        setIsLoadingJobs(false); // FONTOS: Befejezzük a betöltést
         // showToast("Munkák sikeresen betöltve!", "success"); // Opcionális toast
       } catch (error) {
         console.error("Hiba a munkák adatainak lekérésekor:", error);
@@ -246,6 +249,7 @@ export const JobProvider = ({ children }) => {
   
   const value = {
     jobs,
+    isLoadingJobs, // ÚJ: Átadjuk a betöltési állapotot
     addJob,
     deleteJob,
     updateJob,

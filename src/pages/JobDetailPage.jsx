@@ -22,7 +22,7 @@ function JobDetailPage() {
   const [showCompletedTodos, setShowCompletedTodos] = useState(false);
   
   // FONTOS: Mindig a Context-ből olvasunk ki
-  const { team } = useContext(TeamContext);
+  const { team, isLoadingTeam, isLoadingJobs } = useContext(TeamContext);
   const { 
     jobs, deleteJob, assignTeamMember, unassignTeamMember, 
     toggleJobSchedule, addTodoItem, toggleTodoItem, deleteTodoItem 
@@ -49,6 +49,14 @@ function JobDetailPage() {
       </div>
     );
   }
+  
+    if (isLoadingJobs || isLoadingTeam) { 
+    return (
+      <div className="job-detail-page">
+        <h2>Adatok betöltése...</h2>
+      </div>
+    );
+    }
 
   // --- Ha az adatok megvannak, megkeressük a konkrét munkát ---
   const job = jobs.find(j => j.id === currentJobId);
