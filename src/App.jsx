@@ -28,10 +28,7 @@ function App() {
   const [dailyNotes, setDailyNotes] = useState({}); // Ezt még át kell gondolni, de most bent hagyjuk
 
   useEffect(() => {
-    // ... (Ha van itt jegyzet öröklési logika, az ide jönne)
-    // Most az egyszerűség kedvéért ezt kikommentelem/törlöm, mivel a fő jegyzetek munkákhoz kötöttek.
-    // Ha a napi jegyzeteket megtartjuk, akkor a logika marad.
-    // Ha nem, akkor a dailyNotes state is törölhető.
+    console.log("APP.JSX: VITE_API_BASE_URL (buildelt kódban):", API_BASE_URL);
   }, []); 
 
 
