@@ -80,3 +80,10 @@
   margin-bottom: 20px;
   font-size: 0.9em;
 }
+
+.app-version {
+  font-size: 0.7em;
+  color: var(--text-light-color);
+  margin-top: 20px;
+  opacity: 0.6;
+}
