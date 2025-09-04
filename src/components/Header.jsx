@@ -15,7 +15,7 @@ function Header({ onLogout }) {
     <header className="app-header">
       <span>AMIRE</span>
       <button onClick={handleLogoutClick} className="logout-button"> {/* Módosított onClick */}
-        <FaSignOutAlt /> Kijelentkezés
+        <FaSignOutAlt />
       </button>
     </header>
   );
