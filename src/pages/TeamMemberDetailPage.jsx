@@ -3,7 +3,7 @@ import React, { useState, useContext } from 'react';
 import { TeamContext } from '../context/TeamContext';
 import { toYYYYMMDD } from '../utils/date';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaTrash, FaPhone, FaEnvelope, FaPencilAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa'; 
+import { FaArrowLeft, FaTrash, FaPhone, FaEnvelope, FaPencilAlt, FaChevronLeft, FaChevronRight, FaExclamationTriangle } from 'react-icons/fa'; 
 import Modal from '../components/Modal';
 import EditTeamMemberForm from '../components/EditTeamMemberForm';
 import Calendar from 'react-calendar';

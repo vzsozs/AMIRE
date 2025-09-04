@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { TeamContext } from '../context/TeamContext';
 import { JobContext } from '../context/JobContext';
 import { toYYYYMMDD } from '../utils/date';
-import { FaArrowLeft, FaTrash, FaUserPlus, FaTimesCircle, FaPencilAlt, FaChevronLeft, FaChevronRight, FaCheckSquare, FaRegSquare, FaTrashAlt, FaChevronDown, FaChevronUp, FaPlus } from 'react-icons/fa'; // FaPlus is
+import { FaArrowLeft, FaTrash, FaUserPlus, FaTimesCircle, FaPencilAlt, FaChevronLeft, FaChevronRight, FaCheckSquare, FaRegSquare, FaTrashAlt, FaChevronDown, FaChevronUp, FaPlus, FaExclamationTriangle } from 'react-icons/fa'; 
 import Modal from '../components/Modal';
 import EditJobForm from '../components/EditJobForm';
 import Calendar from 'react-calendar';
