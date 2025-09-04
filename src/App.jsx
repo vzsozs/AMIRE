@@ -18,6 +18,7 @@ import JobDetailPage from './pages/JobDetailPage';
 import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage'; // ÚJ IMPORT
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // ÚJ ÁLLAPOT
@@ -37,7 +38,7 @@ function App() {
     // ÚJ FÜGGVÉNY: Bejelentkezés kezelése
   const handleLogin = async (username, password) => {
     try {
-      const response = await fetch('http://localhost:3001/api/login', {
+      const response = await fetch(`${API_BASE_URL}/login`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
