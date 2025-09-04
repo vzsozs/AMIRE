@@ -25,7 +25,7 @@ function LoginPage({ onLogin }) {
         <p className="subtitle">Bejelentkezés az alkalmazásba</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Felhasználónév</label>
+            <label htmlFor="username">User</label>
             <input
               type="text"
               id="username"
