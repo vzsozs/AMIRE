@@ -54,7 +54,8 @@ function App() {
     } else {
         setAppVersion('Fejlesztés alatt');
     }
-  }, [API_BASE_URL]);
+  }, []); // FONTOS: Most már üres a függőségi tömb!
+
 
   // Bejelentkezés kezelése
   const handleLogin = async (username, password) => {
