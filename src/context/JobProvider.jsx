@@ -62,8 +62,8 @@ export const JobProvider = ({ children }) => {
         body: JSON.stringify(newJobData), 
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const newJob = await response.json(); // A backend adja vissza a teljes objektumot, ID-vel
-      setJobs(prevJobs => [...prevJobs, newJob]); // Ezt adjuk hozzá az állapothoz
+      const newJobFromBackend = await response.json(); // A backend adja vissza a teljes objektumot, ID-vel
+      setJobs(prevJobs => [...prevJobs, newJobFromBackend]); // EZ A JAVÍTOTT SOR!
       showToast("Munka sikeresen hozzáadva!", "success");
     } catch (error) {
       console.error("Hiba új munka hozzáadása során:", error);

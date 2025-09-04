@@ -57,8 +57,8 @@ export const TeamProvider = ({ children }) => {
         body: JSON.stringify(newMemberData), 
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const newMember = await response.json(); // A backend adja vissza a teljes objektumot, ID-vel
-      setTeam(prevTeam => [...prevTeam, newMember]);
+      const newMemberFromBackend = await response.json(); // A backend adja vissza a teljes objektumot, ID-vel
+      setTeam(prevTeam => [...prevTeam, newMemberFromBackend]); // EZ A JAVÍTOTT SOR!
       showToast("Csapattag sikeresen hozzáadva!", "success");
     } catch (error) {
       console.error("Hiba új csapattag hozzáadása során:", error);
