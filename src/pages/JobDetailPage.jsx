@@ -53,18 +53,24 @@ function JobDetailPage() {
   // --- Ha az adatok megvannak, megkeressük a konkrét munkát ---
   const job = jobs.find(j => j.id === currentJobId);
 
+   // Ha a 'job' objektum még mindig undefined, az azt jelenti, hogy az ID nem létezik.
   if (!job) {
     console.log("JobDetailPage: A munka nem található az aktuális listában. jobId:", currentJobId);
     return (
       <div className="job-detail-page">
-        <h2>Hiba: A munka nem található</h2>
-        <p>A keresett munka azonosítója hibás, vagy a munka már nem létezik. Kérem, térjen vissza a listához.</p>
-        <button onClick={() => navigate('/tasks')} className="back-button" style={{ marginTop: '20px' }}>
-          <FaArrowLeft /> Vissza a listához
-        </button>
+        <div className="empty-state"> {/* ÚJ: EmptyState komponens használata */}
+            <h2 className="empty-state-title"><FaExclamationTriangle /> Munka nem található</h2>
+            <p className="empty-state-message">
+                A keresett munka azonosítója hibás, vagy a munka már nem létezik.
+            </p>
+            <button onClick={() => navigate('/tasks')} className="button-primary" style={{ marginTop: '20px' }}>
+                <FaArrowLeft /> Vissza a munkák listájához
+            </button>
+        </div>
       </div>
     );
   }
+
   
   // === INNENTŐL KEZDVE BIZTOSAK VAGYUNK BENNE, HOGY A 'job' ÉS 'team' LÉTEZIK ÉS ÉRVÉNYES ===
   // Ezen a ponton már nem kell optional chaining a job.assignedTeam-nél, 

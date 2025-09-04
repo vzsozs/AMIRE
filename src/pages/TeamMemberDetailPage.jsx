@@ -10,6 +10,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './JobDetailPage.css'; // A meglévő stílusok
 import './TeamMemberDetailPage.css'; // Új, egyedi stílusok a naptárhoz
+import { useToast } from '../context/useToast'; // EZ A JAVÍTÁS
 
 function TeamMemberDetailPage() { 
   const { memberId } = useParams();
@@ -17,6 +18,8 @@ function TeamMemberDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
   const { team, deleteTeamMember, updateTeamMember, toggleAvailability } = useContext(TeamContext);
+
+  const { showToast } = useToast(); // ITT KEZDJÜK HASZNÁLNI
 
   const [key, setKey] = useState(Date.now());
   const [activeStartDate, setActiveStartDate] = useState(new Date());
@@ -28,18 +31,21 @@ function TeamMemberDetailPage() {
     if (isConfirmed) {
       deleteTeamMember(person.id);
       navigate('/team');
+      showToast('Csapattag sikeresen kirúgva :)', 'success'); // Példa a használatra
     }
   };
 
   const handleUpdateSubmit = (updatedData) => {
     updateTeamMember(updatedData);
     setIsEditModalOpen(false);
+    showToast('Csapattag sikeresen frissítve!', 'success'); // Példa a használatra
   };
   
   const handleDayClick = (date) => {
     const dateString = toYYYYMMDD(date);
     toggleAvailability(person.id, dateString);
     setKey(Date.now());
+    showToast('Elérhetőség frissítve!', 'info'); // Példa a használatra
   };
 
   const getTileClassName = ({ date, view }) => {
@@ -68,14 +74,24 @@ function TeamMemberDetailPage() {
     });
   };
 
+  // Ha a 'person' objektum még mindig undefined, az azt jelenti, hogy az ID nem létezik.
   if (!person) {
+    console.log("TeamMemberDetailPage: A csapattag nem található. memberId:", memberId);
     return (
       <div className="job-detail-page">
-        <h2>Hiba</h2>
-        <p>A keresett személy nem található.</p>
+        <div className="empty-state"> {/* ÚJ: EmptyState komponens használata */}
+            <h2 className="empty-state-title"><FaExclamationTriangle /> Csapattag nem található</h2>
+            <p className="empty-state-message">
+                A keresett csapattag azonosítója hibás, vagy a csapattag már nem létezik.
+            </p>
+            <button onClick={() => navigate('/team')} className="button-primary" style={{ marginTop: '20px' }}>
+                <FaArrowLeft /> Vissza a csapat listájához
+            </button>
+        </div>
       </div>
     );
   }
+
 
   return (
     <> {/* Fontos: A React fragment, mert több gyökérelem van */}

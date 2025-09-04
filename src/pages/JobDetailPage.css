@@ -372,3 +372,10 @@
 .add-todo-button:hover {
   background-color: var(--primary-light);
 }
+.button-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+.button-primary:hover {
+  background-color: var(--primary-light);
+}
