@@ -55,18 +55,27 @@ export const JobProvider = ({ children }) => {
 
   const addJob = async (newJobData) => {
     try {
+      console.log("[FRONTEND] 'addJob' hívva, elküldött adatok:", newJobData);
+      
       const response = await fetch(`${API_BASE_URL}/jobs`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        // A 'newJobData' már nem tartalmaz ID-t, csak a form adatait
         body: JSON.stringify(newJobData), 
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const newJobFromBackend = await response.json(); // A backend adja vissza a teljes objektumot, ID-vel
-      setJobs(prevJobs => [...prevJobs, newJobFromBackend]); // EZ A JAVÍTOTT SOR!
+
+      if (!response.ok) {
+        const errorText = await response.text(); // Próbáljuk meg kiolvasni a hibaüzenetet
+        console.error("[FRONTEND] Backend hiba a munka hozzáadásakor:", response.status, errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const newJobFromBackend = await response.json();
+      console.log("[FRONTEND] Backend válasza (új munka):", newJobFromBackend);
+      
+      setJobs(prevJobs => [...prevJobs, newJobFromBackend]);
       showToast("Munka sikeresen hozzáadva!", "success");
     } catch (error) {
-      console.error("Hiba új munka hozzáadása során:", error);
+      console.error("[FRONTEND] Hiba új munka hozzáadása során:", error);
       showToast("Hiba új munka hozzáadása során!", "error");
     }
   };
