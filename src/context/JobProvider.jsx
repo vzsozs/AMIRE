@@ -55,23 +55,14 @@ export const JobProvider = ({ children }) => {
 
   const addJob = async (newJobData) => {
     try {
-      console.log("[FRONTEND] 'addJob' hívva, elküldött adatok:", newJobData);
-      
       const response = await fetch(`${API_BASE_URL}/jobs`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify(newJobData), 
+        // A frontend már nem küld ID-t
+        body: JSON.stringify({ ...newJobData, id: undefined }), 
       });
-
-      if (!response.ok) {
-        const errorText = await response.text(); // Próbáljuk meg kiolvasni a hibaüzenetet
-        console.error("[FRONTEND] Backend hiba a munka hozzáadásakor:", response.status, errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const newJobFromBackend = await response.json();
-      console.log("[FRONTEND] Backend válasza (új munka):", newJobFromBackend);
-      
       setJobs(prevJobs => [...prevJobs, newJobFromBackend]);
       showToast("Munka sikeresen hozzáadva!", "success");
     } catch (error) {
@@ -192,19 +183,13 @@ export const JobProvider = ({ children }) => {
     try {
       const jobToUpdate = jobs.find(job => job.id === jobId);
       if (!jobToUpdate) throw new Error('Munka nem található.');
+      // FONTOS: A todo item ID-t is a backend generálhatná,
+      // de a frontend oldali generálás (Date.now()) itt még elfogadható.
       const newTodoItem = { id: Date.now(), text: todoText, completed: false };
       const updatedTodoList = [...(jobToUpdate.todoList || []), newTodoItem];
-      const jobToSend = { ...jobToUpdate, todoList: updatedTodoList };
-
-      const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(jobToSend),
-      });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const updatedJob = await response.json();
-      setJobs(prevJobs => prevJobs.map(job => job.id === updatedJob.id ? updatedJob : job));
-      showToast("Teendő hozzáadva!", "success");
+      // Itt a teljes 'job' objektumot küldjük frissítésre
+      await updateJob({ ...jobToUpdate, todoList: updatedTodoList }); 
+      // Nem kell showToast, mert az updateJob már küld
     } catch (error) {
       console.error("Hiba teendő hozzáadásakor:", error);
       showToast("Hiba teendő hozzáadásakor!", "error");
