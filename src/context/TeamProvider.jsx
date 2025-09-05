@@ -53,7 +53,6 @@ export const TeamProvider = ({ children }) => {
       const response = await fetch(`${API_BASE_URL}/team`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        // A 'newMemberData' már nem tartalmaz ID-t
         body: JSON.stringify(newMemberData), 
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -85,12 +84,14 @@ export const TeamProvider = ({ children }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/team/${updatedMemberData.id}`, {
         method: 'PUT',
-        headers: getAuthHeaders(), // Token küldése
+        headers: getAuthHeaders(),
         body: JSON.stringify(updatedMemberData),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const updatedMember = await response.json();
-      setTeam(prevTeam => prevTeam.map(member => member.id === updatedMember.id ? updatedMember : member));
+      const updatedMemberFromBackend = await response.json(); // A backend adja vissza a frissített objektumot
+      setTeam(prevTeam => prevTeam.map(member => 
+        member.id === updatedMemberFromBackend.id ? updatedMemberFromBackend : member
+      )); // EZ A JAVÍTOTT SOR!
       showToast("Csapattag sikeresen frissítve!", "success");
     } catch (error) {
       console.error("Hiba csapattag frissítésekor:", error);

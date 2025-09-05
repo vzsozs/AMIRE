@@ -59,11 +59,11 @@ export const JobProvider = ({ children }) => {
         method: 'POST',
         headers: getAuthHeaders(),
         // A frontend már nem küld ID-t
-        body: JSON.stringify({ ...newJobData, id: undefined }), 
+        body: JSON.stringify(newJobData), 
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const newJobFromBackend = await response.json();
-      setJobs(prevJobs => [...prevJobs, newJobFromBackend]);
+      setJobs(prevJobs => [...prevJobs, newJobFromBackend]); 
       showToast("Munka sikeresen hozzáadva!", "success");
     } catch (error) {
       console.error("[FRONTEND] Hiba új munka hozzáadása során:", error);
@@ -100,8 +100,8 @@ export const JobProvider = ({ children }) => {
         body: JSON.stringify(jobToSend),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const updatedJob = await response.json();
-      setJobs(prevJobs => prevJobs.map(job => job.id === updatedJob.id ? updatedJob : job));
+      const updatedJobFromBackend = await response.json(); // A backend adja vissza a frissített objektumot
+      setJobs(prevJobs => prevJobs.map(job => job.id === updatedJobFromBackend.id ? updatedJobFromBackend : job));
       showToast("Munka sikeresen frissítve!", "success");
     } catch (error) {
       console.error("Hiba munka frissítésekor:", error);
